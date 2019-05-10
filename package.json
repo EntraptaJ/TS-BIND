@@ -3,17 +3,24 @@
   "version": "1.0.0",
   "description": "",
   "main": "lib/index.js",
+  "files": [
+    "lib/**/*"
+  ],
   "scripts": {
     "start": "nodemon --watch src --watch input.txt --require ts-node/register src/index.ts",
     "run": "npm run build && node lib/index.js",
-    "build": "tsc -p ."
+    "build": "tsc -p .",
+    "test": "jest --config jestconfig.json --reporters=default --reporters=jest-junit --coverage"
   },
-  "author": "",
+  "author": "Kristian Jones <me@kristianjones.xyz>",
   "license": "ISC",
   "devDependencies": {
     "@types/fs-extra": "^5.1.0",
-    "mocha": "^6.1.4",
+    "@types/jest": "^24.0.12",
+    "jest": "^24.8.0",
+    "jest-junit": "^6.4.0",
     "nodemon": "^1.19.0",
+    "ts-jest": "^24.0.2",
     "ts-node": "^8.1.0",
     "typescript": "^3.4.5"
   },

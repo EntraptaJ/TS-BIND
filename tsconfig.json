@@ -1,17 +1,11 @@
 {
-  "exclude": ["node_modules", "lib"],
   "compilerOptions": {
     "target": "esnext",
     "module": "commonjs",
-    "lib": ["esnext", "dom", "dom.iterable"],
-    "moduleResolution": "node",
     "outDir": "lib",
-    "rootDir": "src",
-    "types": ["node"],
     "esModuleInterop": true,
     "declaration": true,
-    "resolveJsonModule": true,
-    "baseUrl": "./src/",
-    "typeRoots": ["node_module/@types", "types/"]
-  }
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "**/__tests__/*"]
 }
