@@ -1,8 +1,9 @@
 import { processFile } from '../BIND9';
 
-test('Zone Files', async () => {
-	await expect(processFile('Samples/Full.txt')).resolves.toStrictEqual({ 
-		$origin: 'nt.kristianjones.xyz.', 
+
+describe('Loading Zones', () => {
+	test('Loading Sample Zone 1', async () => await expect(processFile('Samples/Full.txt')).resolves.toStrictEqual({
+		$origin: 'nt.kristianjones.xyz.',
 		ns: [{ host: '@', value: 'ns1.kristianjones.xyz.' }],
 		soa: {
 			contact: 'me.kristianjones.xyz.',
@@ -27,5 +28,24 @@ test('Zone Files', async () => {
 			{ host: 'txt1', value: 'hello' },
 			{ host: 'txt2', value: 'world' }
 		]
-	});
-});
+	}))
+
+	test('Loading Sample Zone 2', async () => await expect(processFile('Samples/Full2.txt')).resolves.toStrictEqual({
+		$origin: 'nt.kristianjones.xyz.',
+		ns: [{ host: '@', value: 'ns1.kristianjones.xyz.' }],
+		soa: {
+			contact: 'me.kristianjones.xyz.',
+			serial: '20190314',
+			refresh: '3600',
+			retry: '600',
+			expire: '604800',
+			mttl: '1800'
+		},
+		a: [
+			{ host: 'sxl-knf-kfj-cg4-fw1', ip: '100.64.92.34' },
+			{ host: 'vpn', ip: '1.2.3.4' }
+		],
+		txt: [],
+		cname: []
+	}))
+})

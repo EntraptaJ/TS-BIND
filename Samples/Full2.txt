@@ -1,0 +1,11 @@
+$origin nt.kristianjones.xyz.
+@                      3600 SOA   ns1.kristianjones.xyz. (
+                              me.kristianjones.xyz.      ; address of responsible party
+                              20190314                   ; serial number
+                              3600                       ; refresh period
+                              600                        ; retry period
+                              604800                     ; expire time
+                              1800                     ) ; minimum ttl
+@ IN  NS      ns1.kristianjones.xyz.
+sxl-knf-kfj-cg4-fw1             IN      A       100.64.92.34
+vpn		A	1.2.3.4
