@@ -14,10 +14,18 @@ export type NS = {
   value: string;
 }
 
+export type VRECORD = {
+  host: string
+  value: string
+}
+
 
 export type ZONE = {
   $origin: string
   soa: SOA
-  ns: NS[]
+  ns: VRECORD[]
   a: A[]
+  cname: VRECORD[]
+  txt: VRECORD[]
+
 }

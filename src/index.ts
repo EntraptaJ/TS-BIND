@@ -1,6 +1,6 @@
 import { createReadStream } from 'fs-extra';
 import { createInterface } from 'readline';
-import { ZONE, NS, A } from './types';
+import { ZONE, NS, A, VRECORD } from './types';
 
 const processFile = async (): Promise<ZONE> => {
   // Open File here
@@ -13,7 +13,7 @@ const processFile = async (): Promise<ZONE> => {
   });
 
   // @ts-ignore
-  let Zone: ZONE = { $origin: '', ns: [], soa: {}, a: [] };
+  let Zone: ZONE = { $origin: '', ns: [], soa: {}, a: [], cname: [], txt: [] };
 
   // Iterate through file async line by line
   for await (let line of rl) {
@@ -27,7 +27,7 @@ const processFile = async (): Promise<ZONE> => {
     if (uLine.indexOf('$ORIGIN') === 0) Zone.$origin = line.split(/\s+/g)[1];
 
     // Test for name server record and process with value extractor
-    if (/\s+NS\s+/.test(line)) Zone.ns.push(await ProcessValueRecord(line));
+    if (/\s+(NS|CNAME|TXT)\s+/.test(line)) Zone[/\s+(NS|CNAME|TXT)\s+/.exec(line)[1].toLowerCase()].push(await ProcessValueRecord(line));
 
     // Test if IP Reccord.
     if (/\s+A\s+/.test(line)) Zone.a.push(await ProcessIPRecord(line));
@@ -35,16 +35,12 @@ const processFile = async (): Promise<ZONE> => {
   return Zone;
 };
 
-const ProcessValueRecord = async (line: string): Promise<NS> => {
+const ProcessValueRecord = async (line: string): Promise<VRECORD> => {
   const [host, , , value] = line.split(/\s+/g);
   return { host, value };
 };
 
-const ProcessIPRecord = async (line: string) =>
-  new RegExp(
-    /(?<host>^\S{1,50}).*\s(?<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/gu
-  ).exec(line).groups as A;
+const ProcessIPRecord = async (line: string) => new RegExp(/(?<host>^\S+).*\s(?<ip>(\d{1,3}\.\d{1,3}){3})/gu).exec(line).groups as A;
 
-processFile().then(zone =>
-  console.log(zone.a.find(a => a.host == 'sxl-knf-kfj-cg4-fw1'))
-);
+processFile().then(zone => console.log(zone));
+
