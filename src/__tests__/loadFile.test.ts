@@ -1,9 +1,7 @@
 import { processFile } from '../BIND9';
 
 test('Zone Files', async () => {
-	const zone = await processFile('Samples/Full.txt')
-	console.log(zone.$origin)
-	expect(zone).toStrictEqual({ 
+	await expect(processFile('Samples/Full.txt')).resolves.toStrictEqual({ 
 		$origin: 'nt.kristianjones.xyz.', 
 		ns: [{ host: '@', value: 'ns1.kristianjones.xyz.' }],
 		soa: {
