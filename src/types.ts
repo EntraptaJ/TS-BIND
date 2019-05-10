@@ -1,6 +1,10 @@
 export type SOA = {
-  name: string;
-  minimum: number
+  contact: string;
+  serial: string;
+  refresh: string;
+  retry: string;
+  expire: string;
+  mttl: string;
 }
 
 export type A = {
