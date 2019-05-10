@@ -32,10 +32,10 @@ prepare:deps:
 
 
 test:
+  extends: .tests
   services:
     - docker:dind
   script:
-    - ls /var/run/
     - npm run test
   coverage: /All\sfiles.*?\s+(\d+.\d+)/
   artifacts:
