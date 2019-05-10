@@ -17,11 +17,19 @@ const processFile = async (): Promise<ZONE> => {
 
   // Iterate through file async line by line
   for await (let line of rl) {
+    // Remove comments from current line
     line = line.replace(/(^|[^\\]);.*/g, '');
+
+    // Convert current line to uppercase
     const uLine = line.toUpperCase();
-    // Process file here
+
+    // IF upercase line has $ORIGIN then set Zone Origin to current line
     if (uLine.indexOf('$ORIGIN') === 0) Zone.$origin = line.split(/\s+/g)[1];
+
+    // Test for name server record and process with value extractor
     if (/\s+NS\s+/.test(line)) Zone.ns.push(await ProcessValueRecord(line));
+
+    // Test if IP Reccord.
     if (/\s+A\s+/.test(line)) Zone.a.push(await ProcessIPRecord(line));
   }
   return Zone;
@@ -32,6 +40,11 @@ const ProcessValueRecord = async (line: string): Promise<NS> => {
   return { host, value };
 };
 
-const ProcessIPRecord = async (line: string) => new RegExp(/(?<host>^\S{1,50}).*\s(?<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/u).exec(line).groups as A;
-// @ts-ignore
-processFile().then(zone => console.log(zone.a.find(a => a.host == 'sxl-knf-kfj-cg4-fw1').ip));
+const ProcessIPRecord = async (line: string) =>
+  new RegExp(
+    /(?<host>^\S{1,50}).*\s(?<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/gu
+  ).exec(line).groups as A;
+
+processFile().then(zone =>
+  console.log(zone.a.find(a => a.host == 'sxl-knf-kfj-cg4-fw1'))
+);
