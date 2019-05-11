@@ -1,18 +1,13 @@
-import { createReadStream, pathExists } from 'fs-extra';
 import { createInterface } from 'readline';
-import { ZONE, IP, VRECORD, SOA } from './types';
+import { ZONE, VRECORD, SOA } from './types';
+import { StringStream } from '@rauschma/stringio';
 
 const VALUEXP = /\s+(NS|CNAME|TXT|PTR|A|AAAA)\s+/;
 
-export const parseZoneFile = async (file: string): Promise<ZONE> => {
-  // Throw error if the path requested does not exists.
-  if (!(await pathExists(file))) throw new Error('ZONE FILE DOES NOT EXIST');
-  // Open File here
-  const fileStream = createReadStream(file);
-
+export const parseZoneFile = async (zone: string): Promise<ZONE> => {
   // Async Interface for line by line processing
   const rl = createInterface({
-    input: fileStream,
+    input: new StringStream(zone),
     crlfDelay: Infinity,
   });
 

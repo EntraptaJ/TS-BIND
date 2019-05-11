@@ -1,7 +1,6 @@
-import { writeFile } from 'fs-extra';
 import { ZONE } from './types';
 
-export const generateZoneFile = async (zone: ZONE, file: string) => {
+export const generateZoneFile = async (zone: ZONE) => {
   const Aes = zone.a ? zone.a.map(a => `\n${a.host}   A     ${a.value}`).join('') : [];
   const AAAAs = zone.aaaa ? zone.aaaa.map(aaaa => `\n${aaaa.host} AAAA ${aaaa.value}`).join('') : [];
   const NSes = zone.ns
@@ -30,7 +29,5 @@ ${AAAAs}
 ; CNAME Records
 ${CNAMEs}
 `;
-
-  await writeFile(file, zoneText);
-  return true;
+  return zoneText;
 };

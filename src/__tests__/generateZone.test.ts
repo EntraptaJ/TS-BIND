@@ -1,5 +1,5 @@
 import { generateZoneFile } from '../createZone';
-import { ZONE } from '../types';
+import fs from 'fs-extra';
 const zone = {
 	$origin: 'net.kristianjones.xyz.',
 	soa: {
@@ -11,12 +11,11 @@ const zone = {
 		mttl: '1800'	
 	},
 	ns: [{ host: '@', value: 'dnstest.kristianjones.xyz.' }],
-	a: [{ host: 'www', ip: '192.168.1.118'}, { host: 'hello', ip: '1.0.0.1'}],
-	aaaa: [{ host: '@', ip: '2001:4860:4860::8888' }]
+	a: [{ host: 'www', value: '192.168.1.118'}, { host: 'hello', value: '1.0.0.1'}],
+	aaaa: [{ host: '@', value: '2001:4860:4860::8888' }]
 
 }
 
 test('Generate Zone Files', async () => {
-	// @ts-ignore
-	await expect(generateZoneFile(zone, 'Zones/testing.txt')).resolves.not.toThrow()
+	await expect(generateZoneFile(zone)).resolves.not.toThrow()
 });

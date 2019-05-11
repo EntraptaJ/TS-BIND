@@ -7,12 +7,6 @@ export type SOA = {
   mttl: string;
 }
 
-export type IP = {
-  host: string;
-  ip: string;
-  ttl?: number;
-}
-
 export type NS = {
   host: string;
   TTL?: number
@@ -36,5 +30,4 @@ export type ZONE = {
   cname?: VRECORD[]
   txt?: VRECORD[];
   ptr?: VRECORD[]
-
 }
