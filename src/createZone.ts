@@ -1,13 +1,13 @@
-import { writeFile } from 'fs-extra'
+import { writeFile } from 'fs-extra';
 import { ZONE } from './types';
 
-
-
-export const generateZone = async (zone: ZONE, file: string) => {
-  const Aes = zone.a ? zone.a.map(a => `\n${a.host}   A     ${a.ip}`).join('') : [];
-  const AAAAs = zone.aaaa ? zone.aaaa.map(aaaa => `\n${aaaa.host} AAAA ${aaaa.ip}`).join('') : []
-  const NSes = zone.ns ? zone.ns.map(ns => `\n${ns.host}     NS    ${/\.\D+\.$/.test(ns.value) ? ns.value : `${ns.value}.`}`).join('') : []
-  const CNAMEs = zone.cname ? zone.cname.map((cname) => `\n${cname.host} CNAME ${cname.value}`).join(''): []
+export const generateZoneFile = async (zone: ZONE, file: string) => {
+  const Aes = zone.a ? zone.a.map(a => `\n${a.host}   A     ${a.value}`).join('') : [];
+  const AAAAs = zone.aaaa ? zone.aaaa.map(aaaa => `\n${aaaa.host} AAAA ${aaaa.value}`).join('') : [];
+  const NSes = zone.ns
+    ? zone.ns.map(ns => `\n${ns.host}     NS    ${/\.\D+\.$/.test(ns.value) ? ns.value : `${ns.value}.`}`).join('')
+    : [];
+  const CNAMEs = zone.cname ? zone.cname.map(cname => `\n${cname.host} CNAME ${cname.value}`).join('') : [];
   const zoneText = `
 $ORIGIN ${/\.\D+\.$/.test(zone.$origin) ? zone.$origin : `${zone.$origin}.`}\n
 @ 3600 SOA ${/\.\D+\.$/.test(zone.ns[0].value) ? zone.ns[0].value : `${zone.ns[0].value}.`} (
@@ -33,4 +33,4 @@ ${CNAMEs}
 
   await writeFile(file, zoneText);
   return true;
-}
+};

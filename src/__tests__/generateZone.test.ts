@@ -1,4 +1,4 @@
-import { generateZone } from '../createZone';
+import { generateZoneFile } from '../createZone';
 import { ZONE } from '../types';
 const zone = {
 	$origin: 'net.kristianjones.xyz.',
@@ -18,5 +18,5 @@ const zone = {
 
 test('Generate Zone Files', async () => {
 	// @ts-ignore
-	await expect(generateZone(zone, 'Zones/testing.txt')).resolves.not.toThrow()
+	await expect(generateZoneFile(zone, 'Zones/testing.txt')).resolves.not.toThrow()
 });

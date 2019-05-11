@@ -1,4 +1,5 @@
-$origin nt.kristianjones.xyz.
+$ORIGIN nt.kristianjones.xyz.
+$TTL 3600
 @                      3600 SOA   ns1.kristianjones.xyz. (
                               me.kristianjones.xyz.      ; address of responsible party
                               20190314                   ; serial number

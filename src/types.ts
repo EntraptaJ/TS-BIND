@@ -8,8 +8,9 @@ export type SOA = {
 }
 
 export type IP = {
-  host: string
-  ip: string
+  host: string;
+  ip: string;
+  ttl?: number;
 }
 
 export type NS = {
@@ -19,18 +20,21 @@ export type NS = {
 }
 
 export type VRECORD = {
-  host: string
-  value: string
+  host: string;
+  value: string;
+  ttl?: number;
 }
 
 
 export type ZONE = {
   $origin: string
+  $ttl?: number;
   soa: SOA
   ns: VRECORD[]
-  a?: IP[]
-  aaaa?: IP[]
+  a?: VRECORD[]
+  aaaa?: VRECORD[]
   cname?: VRECORD[]
-  txt?: VRECORD[]
+  txt?: VRECORD[];
+  ptr?: VRECORD[]
 
 }
