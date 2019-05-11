@@ -7,7 +7,7 @@ export type SOA = {
   mttl: string;
 }
 
-export type A = {
+export type IP = {
   host: string
   ip: string
 }
@@ -28,8 +28,9 @@ export type ZONE = {
   $origin: string
   soa: SOA
   ns: VRECORD[]
-  a: A[]
-  cname: VRECORD[]
-  txt: VRECORD[]
+  a?: IP[]
+  aaaa?: IP[]
+  cname?: VRECORD[]
+  txt?: VRECORD[]
 
 }

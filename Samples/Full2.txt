@@ -6,6 +6,8 @@ $origin nt.kristianjones.xyz.
                               600                        ; retry period
                               604800                     ; expire time
                               1800                     ) ; minimum ttl
-@ IN  NS      ns1.kristianjones.xyz.
-sxl-knf-kfj-cg4-fw1             IN      A       100.64.92.34
-vpn		A	1.2.3.4
+@								NS      ns1.kristianjones.xyz.
+sxl-knf-kfj-cg4-fw1             A       192.0.2.1
+vpn								A		1.2.3.4
+
+mail1                           CNAME   mail

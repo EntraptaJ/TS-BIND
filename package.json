@@ -1,6 +1,6 @@
 {
-  "name": "ts-parser",
-  "version": "1.0.0",
+  "name": "TS-BINDZone",
+  "version": "1.0.7",
   "description": "",
   "main": "lib/index.js",
   "files": [

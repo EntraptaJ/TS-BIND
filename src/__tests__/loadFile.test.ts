@@ -1,51 +1,19 @@
 import { processFile } from '../BIND9';
-
+import { SAMPLE1, SAMPLE2 } from './samples';
 
 describe('Loading Zones', () => {
-	test('Loading Sample Zone 1', async () => await expect(processFile('Samples/Full.txt')).resolves.toStrictEqual({
-		$origin: 'nt.kristianjones.xyz.',
-		ns: [{ host: '@', value: 'ns1.kristianjones.xyz.' }],
-		soa: {
-			contact: 'me.kristianjones.xyz.',
-			serial: '20190314',
-			refresh: '3600',
-			retry: '600',
-			expire: '604800',
-			mttl: '1800'
-		},
-		a: [
-			{ host: 'sxl-knf-kfj-cg4-fw1', ip: '100.64.92.34' },
-			{ host: 'vpn', ip: '66.165.222.178' },
-			{ host: 'sxlk-kfj-rk1-fw1', ip: '100.64.92.34' },
-			{ host: 'nyc-hp-fw1', ip: '104.248.48.170' },
-			{ host: 'www', ip: '127.0.0.1' }
-		],
-		cname: [
-			{ host: 'mail1', value: 'mail' },
-			{ host: 'mail2', value: 'mail' }
-		],
-		txt: [
-			{ host: 'txt1', value: 'hello' },
-			{ host: 'txt2', value: 'world' }
-		]
-	}))
+	test('Loading Sample Zone 1', async () => await expect(processFile('Samples/Full.txt')).resolves.toStrictEqual(SAMPLE1))
 
-	test('Loading Sample Zone 2', async () => await expect(processFile('Samples/Full2.txt')).resolves.toStrictEqual({
-		$origin: 'nt.kristianjones.xyz.',
-		ns: [{ host: '@', value: 'ns1.kristianjones.xyz.' }],
-		soa: {
-			contact: 'me.kristianjones.xyz.',
-			serial: '20190314',
-			refresh: '3600',
-			retry: '600',
-			expire: '604800',
-			mttl: '1800'
-		},
-		a: [
-			{ host: 'sxl-knf-kfj-cg4-fw1', ip: '100.64.92.34' },
-			{ host: 'vpn', ip: '1.2.3.4' }
-		],
-		txt: [],
-		cname: []
-	}))
+	test('Loading Sample Zone 2', async () => await expect(processFile('Samples/Full2.txt')).resolves.toStrictEqual(SAMPLE2))
+
+	describe('Error Handling', () => {
+		test('Error Handling - INVALID FILE PATH', async () => await expect(processFile('Samples/INVALID/IDONOTEXIST.txt')).rejects.toThrowError('ZONE FILE DOES NOT EXIST'))
+		test('Error Handling - INVALID SANDBOX', async () => await expect(processFile('Samples/INVALID/INVALID1.txt')).rejects.toThrowError('INVALID ZONE FILE'))
+	})
+
+	// test('Load Generated ZONE FILE', async () => {
+	// 	const zone = await processFile('genZone1.txt');
+	// 	zone.aaaa.map((aaaa) => console.log(aaaa.ip))
+		
+	// })
 })
