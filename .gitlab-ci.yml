@@ -1,7 +1,7 @@
 stages:
   - prepare
   - test
-
+  - publish
 
 .tests:
   image: mhart/alpine-node:latest
@@ -50,10 +50,11 @@ test:
 
 publish:
   image: mhart/alpine-node:latest
+  stage: publish
   dependencies:
     - prepare:deps
   only:
-    - "master"
+    - tags
   script:
     - echo "//npm.kristianjones.xyz/:_authToken=$NPM_AUTH_TOKEN" > ~/.npmrc
     - npm set registry https://npm.kristianjones.xyz
