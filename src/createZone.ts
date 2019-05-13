@@ -14,7 +14,13 @@ export const generateZoneFile = async (zone: ZONE) => {
                     RCD.push(
                       `\n${zone[a][a2].host}     ${
                         typeof zone[a][a2].ttl !== 'undefined' ? zone[a][a2].ttl : ''
-                      }    IN    ${a.toUpperCase()}     ${zone[a][a2].value}`,
+                      }    IN    ${a.toUpperCase()}     ${
+                        a.toUpperCase() == 'NS'
+                          ? /\.\D+\.$/.test(zone[a][a2].value)
+                            ? zone[a][a2].value
+                            : `${zone[a][a2].value}.`
+                          : zone[a][a2].value
+                      }`,
                     );
                   break;
               }
