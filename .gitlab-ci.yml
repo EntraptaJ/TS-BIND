@@ -10,10 +10,6 @@ stages:
     - prepare:deps
   variables:
     NODE_ENV: "test"
-  only:
-    - master
-    - feat-typescript
-    - /^renovate\/.*$/
 
 prepare:deps:
   image: mhart/alpine-node:latest
