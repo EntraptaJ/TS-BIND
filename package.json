@@ -11,7 +11,8 @@
     "run": "npm run build && node lib/index.js",
     "build": "tsc -p .",
     "test": "jest --config jestconfig.json --reporters=default --reporters=jest-junit --coverage",
-    "deploy": "npm run build && npm publish"
+    "prepublish": "npm run build",
+    "postversion": "git push --follow-tags"
   },
   "author": "Kristian Jones <me@kristianjones.xyz>",
   "license": "ISC",

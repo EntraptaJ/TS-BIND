@@ -1,7 +1,7 @@
 stages:
   - prepare
   - test
-  - publish
+  - deploy
 
 .tests:
   image: mhart/alpine-node:latest
@@ -50,7 +50,7 @@ test:
 
 publish:
   image: mhart/alpine-node:latest
-  stage: publish
+  stage: deploy
   dependencies:
     - prepare:deps
   only:
@@ -58,4 +58,4 @@ publish:
   script:
     - echo "//npm.kristianjones.xyz/:_authToken=$NPM_AUTH_TOKEN" > ~/.npmrc
     - npm set registry https://npm.kristianjones.xyz
-    - npm run deploy
+    - npm publish
