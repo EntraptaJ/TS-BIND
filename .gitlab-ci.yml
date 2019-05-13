@@ -48,3 +48,13 @@ test:
     reports:
       junit: junit.xml
 
+publish:
+  image: mhart/alpine-node:latest
+  dependencies:
+    - prepare:deps
+  only:
+    - "master"
+  script:
+    - echo "//npm.kristianjones.xyz/:_authToken=$NPM_AUTH_TOKEN" > ~/.npmrc
+    - npm set registry https://npm.kristianjones.xyz
+    - npm run deploy

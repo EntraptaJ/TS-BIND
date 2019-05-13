@@ -1,6 +1,6 @@
 {
   "name": "TS-BINDZone",
-  "version": "1.12.0",
+  "version": "1.14.0",
   "description": "",
   "main": "lib/index.js",
   "files": [
@@ -10,7 +10,8 @@
     "start": "nodemon --watch src --watch input.txt --require ts-node/register src/index.ts",
     "run": "npm run build && node lib/index.js",
     "build": "tsc -p .",
-    "test": "jest --config jestconfig.json --reporters=default --reporters=jest-junit --coverage"
+    "test": "jest --config jestconfig.json --reporters=default --reporters=jest-junit --coverage",
+    "deploy": "npm run build && npm publish"
   },
   "author": "Kristian Jones <me@kristianjones.xyz>",
   "license": "ISC",

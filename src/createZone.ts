@@ -1,36 +1,12 @@
-import { ZONE } from './types';
+import { ZONE, VRECORD, SOA } from './types';
 
-export const generateZoneFile = async (zone: ZONE) => {
-  const Records = await Promise.all(
-    Object.keys(zone).map(async a => {
-      let RCD = [];
-      switch (typeof zone[a]) {
-        case 'object':
-          await Promise.all(
-            Object.keys(zone[a]).map(async a2 => {
-              switch (typeof zone[a][a2]) {
-                case 'object':
-                  if (zone[a][a2].host)
-                    RCD.push(
-                      `\n${zone[a][a2].host}     ${
-                        typeof zone[a][a2].ttl !== 'undefined' ? zone[a][a2].ttl : ''
-                      }    IN    ${a.toUpperCase()}     ${
-                        a.toUpperCase() == 'NS'
-                          ? /\.\D+\.$/.test(zone[a][a2].value)
-                            ? zone[a][a2].value
-                            : `${zone[a][a2].value}.`
-                          : zone[a][a2].value
-                      }`,
-                    );
-                  break;
-              }
-            }),
-          );
-          break;
-      }
-      return RCD.join('');
-    }),
-  );
+let RCD: { [key: string]: string[] } = { };
+
+export const generateZoneFile = async (zone: ZONE): Promise<string> => {
+  RCD = {};
+
+  const map = Object.entries(zone);
+  await Promise.all(map.map(async item => await processOBJ(item)));
   const zoneText = `
 $ORIGIN ${/\.\D+\.$/.test(zone.$origin) ? zone.$origin : `${zone.$origin}.`}\n
 @ 3600 SOA ${/\.\D+\.$/.test(zone.ns[0].value) ? zone.ns[0].value : `${zone.ns[0].value}.`} (
@@ -41,6 +17,21 @@ $ORIGIN ${/\.\D+\.$/.test(zone.$origin) ? zone.$origin : `${zone.$origin}.`}\n
   ${zone.soa.expire}                     ; expire time
   ${zone.soa.mttl}                     ) ; minimum ttl
 
-${Records.join('')}`;
+${Object.entries(RCD).map(([a1,b1],b) => `\n\n; ${a1.toUpperCase()} Records ${b1.join('')}`).join('')}`;
   return zoneText;
 };
+
+const processOBJ = async ([key, a]: [string, string | number | SOA | VRECORD[]]) =>
+  Array.isArray(a)
+    ? a.map(async obj => {
+        const line = `\n${obj.host}  ${typeof obj.ttl !== 'undefined' ? obj.ttl : ''}   ${key.toUpperCase()}   ${await formatValue(
+          obj.value,
+          key,
+        )}`
+        if (!RCD[key]) RCD[key] = [line]
+        else RCD[key].push(line)
+          })
+    : '';
+
+const formatValue = async (value: string, key: string) =>
+  key.toUpperCase() == 'NS' ? (/\.\D+\.$/.test(value) ? value : `${value}.`) : value;

@@ -61,6 +61,15 @@ export const parseZoneFile = async (zone: string): Promise<ZONE> => {
   return Zone;
 };
 
+/**
+ * Extracts TTL, host, and value from a zonefile line
+ * @param line line of Zonefile
+ * @exmaple
+ * ```ts
+ * const line = '@     300    IN    NS     ns1.exmaple.xyz.'
+ * const { ttl, host, value } = await ProcessValueRecord(value)
+ * ```
+ */
 const ProcessValueRecord = async (line: string): Promise<VRECORD> => {
   let [host, ...rrRecord] = line.trim().split(/\s+/g);
   let returnObj: VRECORD = { host: host, value: '' };

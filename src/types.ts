@@ -19,10 +19,21 @@ export type VRECORD = {
   ttl?: number;
 }
 
-
+/**
+ * BIND9 Zonefile
+ */
 export type ZONE = {
+  /**
+   * Domain for the zone file
+   */
   $origin: string
+  /**
+   * Optional TTL for the zonefile
+   */
   $ttl?: number;
+  /**
+   * SOA for the zonefile
+   */
   soa: SOA
   ns: VRECORD[]
   a?: VRECORD[]
