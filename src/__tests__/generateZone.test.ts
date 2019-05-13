@@ -27,12 +27,4 @@ describe('Generate Zone Files', () => {
 		const loadedZone = await parseZoneFile(zoneOBJ);
 		await expect(loadedZone).toStrictEqual(expectZone);
 	})
-	
-
-
 })
-
-test('Generate Zone Files', async () => {
-	await expect(generateZoneFile(zone)).resolves.not.toThrow()
-});
-
