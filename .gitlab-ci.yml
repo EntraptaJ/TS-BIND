@@ -54,4 +54,5 @@ publish:
   script:
     - echo "//npm.kristianjones.xyz/:_authToken=$NPM_AUTH_TOKEN" > ~/.npmrc
     - npm set registry https://npm.kristianjones.xyz
+    - npm run build
     - npm publish
