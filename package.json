@@ -11,7 +11,7 @@
     "run": "npm run build && node lib/index.js",
     "build": "tsc -p .",
     "test": "jest --config jestconfig.json --reporters=default --reporters=jest-junit --coverage",
-    "prepublish": "npm run build",
+    "prepublishOnly": "npm run build",
     "postversion": "git push --follow-tags"
   },
   "repository": {
