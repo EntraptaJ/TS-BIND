@@ -9,8 +9,7 @@ export const generateZoneFile = async (zone: ZONE): Promise<string> => {
   await Promise.all(map.map(async item => await processOBJ(item)));
   const zoneText = `
 $ORIGIN ${/\.\D+\.$/.test(zone.$origin) ? zone.$origin : `${zone.$origin}.`}\n
-@ 3600 SOA ${/\.\D+\.$/.test(zone.ns[0].value) ? zone.ns[0].value : `${zone.ns[0].value}.`} (
-  ${zone.soa.contact}      ; address of responsible party
+${zone.$origin} IN SOA ${/\.\D+\.$/.test(zone.ns[0].value) ? zone.ns[0].value : `${zone.ns[0].value}.`} ${zone.soa.contact} (
   ${zone.soa.serial}                   ; serial number
   ${zone.soa.refresh}                       ; refresh period
   ${zone.soa.retry}                        ; retry period

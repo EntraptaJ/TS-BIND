@@ -55,3 +55,27 @@ export const SAMPLE2 = {
 	],
 	txt: [{ host: 'treefrog.ca', value: 'v=spf1 a mx a:mail.treefrog.ca a:webmail.treefrog.ca ip4:76.75.250.33', ttl: 300}],
 }
+
+export const DYNSAMPLE1 = {
+	$origin: 'hello1.kristianjones.xyz.',
+	$ttl: 300,
+	soa: {
+		contact: 'me.kristianjones.xyz.hello1.kristianjones.xyz.',
+		serial: '1',
+		refresh: '3600',
+		retry: '600',
+		expire: '604800',
+		mttl: '1800'
+	},
+	a: [
+		{host: '@', value: '1.1.1.1'},
+		{ host: 'tst1', value: '1.0.0.1'}
+	],
+	aaaa: [],
+	cname: [],
+	ptr: [],
+	txt: [],
+	ns: [
+		{ host: '@', value: 'dnstest.kristianjones.xyz.' }
+	]
+}

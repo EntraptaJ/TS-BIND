@@ -1,0 +1,14 @@
+$ORIGIN .
+$TTL 3600       ; 1 hour
+hello1.kristianjones.xyz IN SOA dnstest.kristianjones.xyz. me.kristianjones.xyz.hello1.kristianjones.xyz. (
+                                1          ; serial
+                                3600       ; refresh (1 hour)
+                                600        ; retry (10 minutes)
+                                604800     ; expire (1 week)
+                                1800       ; minimum (30 minutes)
+                                )
+                        NS      dnstest.kristianjones.xyz.
+                        A       1.1.1.1
+$ORIGIN hello1.kristianjones.xyz.
+$TTL 300        ; 5 minutes
+tst1                    A       1.0.0.1

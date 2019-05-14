@@ -1,5 +1,5 @@
 import { parseZoneFile } from '../parseZone';
-import { SAMPLE1, SAMPLE2 } from './samples';
+import { SAMPLE1, SAMPLE2, DYNSAMPLE1 } from './samples';
 import { readFile } from 'fs-extra'
 
 describe('Loading Zones', () => {
@@ -13,6 +13,8 @@ describe('Loading Zones', () => {
 		await expect(parseZoneFile(SMP2.toString())).resolves.toStrictEqual(SAMPLE2)
 	
 	})
+
+	test('Loading DYNDNS Sample', async () => await expect(parseZoneFile((await readFile('Samples/DYN1.txt')).toString())).resolves.toStrictEqual(DYNSAMPLE1))
 
 	describe('Error Handling', () => {
 		test('Error Handling - INVALID SANDBOX', async () => {
