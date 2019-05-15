@@ -1,24 +1,18 @@
-import { createInterface } from 'readline';
 import { ZONE, VRECORD, SOA } from './types';
-import { StringStream } from '@rauschma/stringio';
 
 const VALUEXP = /\s+(NS|CNAME|TXT|PTR|A|AAAA)\s+/;
-const VALUETST = /(NS|CNAME|TXT|PTR|A|AAAA)/;
-
+const VALUETST = /(NS|CNAME|TXT|PTR|A|AAAA|IN)/;
 
 export const parseZoneFile = async (zone: string): Promise<ZONE> => {
   // Async Interface for line by line processing
-  const rl = createInterface({
-    input: new StringStream(zone),
-    crlfDelay: Infinity,
-  });
+  const rl = zone.split('\n')
 
   // @ts-ignore
   let Zone: ZONE = { $origin: '', soa: {}, ns: [], a: [], aaaa: [], cname: [], txt: [], ptr: [] };
   let soa = '';
   let SOASEC;
   // Iterate through file async line by line
-  for await (let line of rl) {
+  for (let line of rl) {
     // Remove comments from current line
     line = line.replace(/(^|[^\\]);.*/g, '');
 
@@ -55,9 +49,9 @@ export const parseZoneFile = async (zone: string): Promise<ZONE> => {
 
   // Extract all values with named capture groups
   Zone.soa = {
-    ...(RegExp(/(?<contact>^\S+)\s{1,2}(?<serial>\d+)\s(?<refresh>\d+)\s(?<retry>\d+)\s(?<expire>\d+)\s(?<mttl>\d+)/g).exec(
-      soa,
-    ).groups as SOA),
+    ...(RegExp(
+      /(?<contact>^\S+)\s{1,2}(?<serial>\d+)\s(?<refresh>\d+)\s(?<retry>\d+)\s(?<expire>\d+)\s(?<mttl>\d+)/g,
+    ).exec(soa).groups as SOA),
   };
 
   return Zone;
@@ -74,16 +68,14 @@ export const parseZoneFile = async (zone: string): Promise<ZONE> => {
  */
 const ProcessValueRecord = async (line: string): Promise<VRECORD> => {
   let [host, ...rrRecord] = line.trim().split(/\s+/g);
-  if (rrRecord.length == 1 && VALUETST.test(host)) host = '@'
+  if (rrRecord.length == 1 && VALUETST.test(host)) host = '@';
   let returnObj: VRECORD = { host: host, value: '' };
   if (!isNaN(parseInt(rrRecord[0])) && rrRecord.length > 1) returnObj.ttl = parseInt(rrRecord[0]);
   returnObj.value =
     rrRecord.length > 5
       ? rrRecord
           .filter(
-            (a, b) =>
-              b < rrRecord.length && a !== 'TXT' && a !== (returnObj.ttl ? returnObj.ttl.toString() : undefined),
-          )
+            (a, b) =>  b < rrRecord.length && (!VALUETST.test(a) && b > 1) && a !== (returnObj.ttl ? returnObj.ttl.toString() : undefined))
           .join(',')
           .replace(/,/g, ' ')
           .replace(/\"/g, '')

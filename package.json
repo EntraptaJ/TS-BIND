@@ -31,7 +31,5 @@
     "ts-node": "^8.1.0",
     "typescript": "^3.4.5"
   },
-  "dependencies": {
-    "@rauschma/stringio": "^1.4.0"
-  }
+  "dependencies": {}
 }

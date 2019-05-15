@@ -1,6 +1,6 @@
 import { ZONE, VRECORD, SOA } from './types';
 
-let RCD: { [key: string]: string[] } = { };
+let RCD: { [key: string]: string[] } = {};
 
 export const generateZoneFile = async (zone: ZONE): Promise<string> => {
   RCD = {};
@@ -16,20 +16,21 @@ $ORIGIN ${/\.\D+\.$/.test(zone.$origin) ? zone.$origin : `${zone.$origin}.`}\n
   ${zone.soa.expire}                     ; expire time
   ${zone.soa.mttl}                     ) ; minimum ttl
 
-${Object.entries(RCD).map(([a1,b1],b) => `\n\n; ${a1.toUpperCase()} Records ${b1.join('')}`).join('')}`;
+${Object.entries(RCD)
+  .map(([a1, b1]) => `\n\n; ${a1.toUpperCase()} Records ${b1.join('')}`)
+  .join('')}`;
   return zoneText;
 };
 
 const processOBJ = async ([key, a]: [string, string | number | SOA | VRECORD[]]) =>
   Array.isArray(a)
     ? a.map(async obj => {
-        const line = `\n${obj.host}  ${typeof obj.ttl !== 'undefined' ? obj.ttl : ''}   ${key.toUpperCase()}   ${await formatValue(
-          obj.value,
-          key,
-        )}`
-        if (!RCD[key]) RCD[key] = [line]
-        else RCD[key].push(line)
-          })
+        const line = `\n${obj.host}  ${
+          typeof obj.ttl !== 'undefined' ? obj.ttl : ''
+        }   ${key.toUpperCase()}   ${await formatValue(obj.value, key)}`;
+        if (!RCD[key]) RCD[key] = [line];
+        else RCD[key].push(line);
+      })
     : '';
 
 const formatValue = async (value: string, key: string) =>

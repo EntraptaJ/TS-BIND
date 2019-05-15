@@ -15,5 +15,6 @@ mail1   IN  CNAME   mail
 mail2   IN  CNAME   mail
 txt1    IN  TXT "hello"
 txt2    IN  TXT "world"
+txt3    IN  TXT "v=spf1 a mx a:mail.treefrog.ca a:webmail.treefrog.ca ip4:76.75.250.33"
 
 @	IN  AAAA	2001:db8::1
