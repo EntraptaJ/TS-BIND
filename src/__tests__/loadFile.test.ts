@@ -1,4 +1,4 @@
-import { parseZoneFile } from '../parseZone';
+import { parseZoneFile } from '../';
 import { SAMPLE1, SAMPLE2, DYNSAMPLE1 } from './samples';
 import { readFile } from 'fs-extra';
 
@@ -12,10 +12,16 @@ describe('Loading Zones', () => {
   test('Loading DYNDNS Sample', async () =>
     await expect(parseZoneFile((await readFile('Samples/DYN1.txt')).toString())).resolves.toStrictEqual(DYNSAMPLE1));
 
+
   /* test('Testing K-Net', async () => {
     const file = await readFile('Samples/KNET/KNT1.txt')
     const zone = await parseZoneFile(file.toString())
-    console.log(zone.mx)
+    zone.a.find(a => a.host == 'rns1.knet.ca.').value = '1.1.1.1'
+    const zoneString = await generateZoneFile(zone);
+    await writeFile('testingKNT.txt', zoneString)
+    const zone2 = await parseZoneFile(zoneString)
+    expect(zone2).toStrictEqual(zone)
+    
     //console.log(zone)
 
   }) */

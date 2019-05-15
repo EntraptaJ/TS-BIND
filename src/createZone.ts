@@ -7,8 +7,8 @@ export const generateZoneFile = async (zone: ZONE): Promise<string> => {
 
   let map = Object.entries(zone);
   const valuemap = map.filter(a => a[0] !== 'srv' && a[0] !== 'mx') as [string, string | number | SOA | VRECORD[]][];
-  const prefmap = map.filter(a => a[0] === 'mx') as [string, MXRECORD[]][];
-  const srvmap = map.filter(a => a[0] === 'srv') as [string, SRVRECORD[]][];
+  const prefmap = map.filter(a => a[0] === 'mx').sort() as [string, MXRECORD[]][];
+  const srvmap = map.filter(a => a[0] === 'srv').sort() as [string, SRVRECORD[]][];
   const promises = [Promise.all(valuemap.map(async item => await processValueOBJ(item))), Promise.all(srvmap.map(async item => await processSRVOBJ(item))), Promise.all(prefmap.map(async item => await processPREFOBJ(item)))];
   await Promise.all(promises);
   const zoneText = `
@@ -28,7 +28,7 @@ ${Object.entries(RCD)
 
 const processValueOBJ = async ([key, a]: [string, string | number | SOA | VRECORD[]]) =>
   Array.isArray(a)
-    ? a.map(async obj => {
+    ? a.sort((a,b) => a.host < b.host ? -1 : 1).map(async obj => {
         const line = `\n${obj.host}  ${typeof obj.ttl !== 'undefined' ? obj.ttl : ''}  IN ${key.toUpperCase()}   ${await formatValue(obj.value, key)}`;
         if (!RCD[key]) RCD[key] = [line];
         else RCD[key].push(line);
