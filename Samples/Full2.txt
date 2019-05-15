@@ -10,6 +10,9 @@ $origin nt.kristianjones.xyz.
 sxl-knf-kfj-cg4-fw1     300     A       192.0.2.1
 vpn								A		1.2.3.4
 
+_http._tcp.example.com.       SRV 0    5      80   www.example.com.
+_ldap._tcp.example.com.  300  SRV 0 0 389 ldap.example.net.
+
 1	PTR	HOST1.MYDOMAIN.COM.
 
 mail1                           CNAME   mail

@@ -1,14 +1,16 @@
-import { ZONE, VRECORD, SOA } from './types';
+import { ZONE, VRECORD, SOA, SRVRECORD, MXRECORD } from './types';
 
 const VALUEXP = /\s+(NS|CNAME|TXT|PTR|A|AAAA)\s+/;
 const VALUETST = /(NS|CNAME|TXT|PTR|A|AAAA|IN)/;
+const PREFTST = /\s+MX\s+/;
+let curhost: string;
 
 export const parseZoneFile = async (zone: string): Promise<ZONE> => {
   // Async Interface for line by line processing
   const rl = zone.split('\n')
 
   // @ts-ignore
-  let Zone: ZONE = { $origin: '', soa: {}, ns: [], a: [], aaaa: [], cname: [], txt: [], ptr: [] };
+  let Zone: ZONE = { $origin: '', soa: {}, ns: [], a: [], aaaa: [], cname: [], txt: [], ptr: [], srv: [], mx: [] };
   let soa = '';
   let SOASEC;
   // Iterate through file async line by line
@@ -22,31 +24,38 @@ export const parseZoneFile = async (zone: string): Promise<ZONE> => {
     // IF upercase line has $ORIGIN then set Zone Origin to current line
     if (uLine.indexOf('$ORIGIN') === 0) Zone.$origin = line.split(/\s+/g)[1];
 
+    // ZONE TTL
     if (uLine.indexOf('$TTL') === 0) Zone.$ttl = parseInt(line.split(/\s+/g)[1], 10);
 
     // If line is the first line of a SOA line enable SOA Parser
     if (/\s+SOA\s+/.test(uLine)) SOASEC = true;
+
     // Append data to SOA String
     if (SOASEC && /(?<=\s+)\S+/.test(line)) soa = soa + line;
+
     // If final line of SOA then disable SOA Mode
     if (SOASEC && /(?<=\s{10})\S+\s+\)|^\s+\)/.test(line)) SOASEC = false;
 
+
+    // SRV Record
     // Test for value record and process with value extractor
     if (VALUEXP.test(uLine))
       Zone[VALUEXP.exec(line)[1].toLowerCase()].push({
         ...(await ProcessValueRecord(line)),
       });
+    else if (/\s+SRV\s+/.test(uLine)) Zone.srv.push(await ProcessSRV(line))
+
+
+    else if (/\s+MX\s+/.test(uLine)) Zone.mx.push(await ProcessPref(line))
   }
   // If their is no SOA at this point it is an INVALID Zone File
   if (soa.length === 0) throw new Error('INVALID ZONE FILE');
-
   // Extract the SOA Information into a line of the info
-  soa = /((?<=SOA\s\S+\s)|(\())[\s\S]*?\)/gim
+  soa = /((?<=SOA\s+\S+\s)|(\())[\s\S]*?\)/gim
     .exec(soa)[0]
     .replace(/\s+/gm, ' ')
     .replace(/\(|\)/g, '')
     .trim();
-
   // Extract all values with named capture groups
   Zone.soa = {
     ...(RegExp(
@@ -66,9 +75,12 @@ export const parseZoneFile = async (zone: string): Promise<ZONE> => {
  * const { ttl, host, value } = await ProcessValueRecord(value)
  * ```
  */
-const ProcessValueRecord = async (line: string): Promise<VRECORD> => {
+export const ProcessValueRecord = async (line: string): Promise<VRECORD> => {
   let [host, ...rrRecord] = line.trim().split(/\s+/g);
+  if (rrRecord.length < 1) throw new Error('INVALID Record')
   if (rrRecord.length == 1 && VALUETST.test(host)) host = '@';
+  if (curhost && VALUETST.test(host)) host = curhost
+  else curhost = host 
   let returnObj: VRECORD = { host: host, value: '' };
   if (!isNaN(parseInt(rrRecord[0])) && rrRecord.length > 1) returnObj.ttl = parseInt(rrRecord[0]);
   returnObj.value =
@@ -82,3 +94,18 @@ const ProcessValueRecord = async (line: string): Promise<VRECORD> => {
       : rrRecord[rrRecord.length - 1].replace(/\"/g, '');
   return returnObj;
 };
+
+
+export const ProcessSRV = async (line: string): Promise<SRVRECORD> => {
+  const [hostRR, ...rr] = line.trim().split(/\s+/g);
+  const [, service, protocol, host] = /^(_\w+).(_\w+).(\S+)/.exec(hostRR)
+  let returnObj: SRVRECORD = { host, service, protocol, priority: parseInt(rr[rr.length - 4]), weight: parseInt(rr[rr.length - 3]), port: parseInt(rr[rr.length - 2]), target: rr[rr.length - 1] }
+  if (!isNaN(parseInt(rr[0])) && rr.length > 1) returnObj.ttl = parseInt(rr[0]);
+  return returnObj;
+}
+
+export const ProcessPref = async (line: string): Promise<MXRECORD> => {
+  const [hostRR, ...rr] = line.trim().split(/\s+/g);
+  let returnObj: MXRECORD = { host: hostRR, preference: parseInt(rr[rr.length - 2]), value: rr[rr.length - 1] }
+  return returnObj
+}

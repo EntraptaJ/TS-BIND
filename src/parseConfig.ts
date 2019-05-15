@@ -2,7 +2,7 @@ import { TSIGALGORITHM, BINDCONFIG, KEYCONFIG, ZONECONFIG, ZONETYPE, UPDATEPOLIC
 
 export const parseBINDConfig = async (config: string): Promise<any> => {
   // Async Interface for line by line processing
-  const rl = config.split('\n')
+  const rl = config.split('\n');
 
   let zone: ZONECONFIG = {};
   let options: boolean = false;
@@ -10,43 +10,48 @@ export const parseBINDConfig = async (config: string): Promise<any> => {
   let key: KEYCONFIG = {};
   let configObj: BINDCONFIG = { options: {}, zones: [], keys: [] };
   for (const line of rl) {
-    if (/options\s{/.test(line) || options && /^\}/.test(line)) options = !options
+    // Begin and End of options block
+    if (/options\s{/.test(line) || (options && /^\}/.test(line))) options = !options;
 
-    if (/directory\s/.test(line) && options) configObj.options.directory = /(?<=")(.*)(?=")/.exec(line)![0]
+    // Directory Option
+    if (/directory\s/.test(line) && options) configObj.options.directory = /(?<=")(.*)(?=")/.exec(line)![0];
 
-    if (/pid-file\s/.test(line) && options) configObj.options.pidFile = /(?<=")(.*)(?=")/.exec(line)![0]
+    // PID File Configuration
+    if (/pid-file\s/.test(line) && options) configObj.options.pidFile = /(?<=")(.*)(?=")/.exec(line)![0];
 
-    if (RegExp(/zone\s"\D.*"\s{/).test(line)) {
+    // Begin of zone block
+    if (/zone\s"\D.*"\s{/.test(line)) {
       if (zone.name) configObj.zones.push(zone);
-      zone = { name: RegExp(/(?<=")(.*)(?=")/).exec(line)![0] };
-    }
-    if (RegExp(/key\s"\D.*"\s{/).test(line)) {
-      if (key.name) configObj.keys.push(key);
-      key = { name: RegExp(/(?<=")(.*)(?=")/).exec(line)![0] };
-    }
-    if (key.name && RegExp(/secret.*/).test(line)) {
-      let secret = RegExp(/(?<=")(.*)(?=")/).exec(line)![0];
-      key = { ...key, secret };
+      zone = { name: /(?<=")(.*)(?=")/.exec(line)![0] };
     }
 
-    if (key.name && RegExp(/algorithm.*/).test(line)) {
-      let algorithm = RegExp(/(?<=algorithm\s).*(?=;)/).exec(line)![0] as TSIGALGORITHM;
-      key = { ...key, algorithm };
-    }
+    // Zone type
+    if (zone.name && /type.*/.test(line)) zone = { ...zone, type: /(?<=type\s).*(?=;)/.exec(line)![0] as ZONETYPE };
 
-    if (zone.name && RegExp(/type.*/).test(line)) {
-      let type = RegExp(/(?<=type\s).*(?=;)/).exec(line)![0] as ZONETYPE;
-      zone = { ...zone, type };
-    }
-    if (zone.name && RegExp(/\sfile\s".*";/).test(line)) {
-      file = RegExp(/(?<=")(.*)(?=")/).exec(line)![0];
+    // Zone file location
+    if (zone.name && /\sfile\s".*";/.test(line)) {
+      file = /(?<=")(.*)(?=")/.exec(line)![0];
       zone = { ...zone, file };
     }
 
-    if (zone.name && /update-policy\s{/.test(line)) zone.updatePolicy = { grant: /grant\s+(\S+)\s/.exec(line)[1], zonesub: /\szonesub\s(\S+);/.exec(line)[1]  }
+    // Zone update policy
+    if (zone.name && /update-policy\s{/.test(line))
+      zone.updatePolicy = { grant: /grant\s+(\S+)\s/.exec(line)[1], zonesub: /\szonesub\s(\S+);/.exec(line)[1] };
+
+
+    // Begin of Key Block
+    if (/key\s"\D.*"\s{/.test(line)) {
+      if (key.name) configObj.keys.push(key);
+      key = { name: /(?<=")(.*)(?=")/.exec(line)![0] };
+    }
+
+    if (key.name && /secret.*/.test(line)) key = { ...key, secret: /(?<=")(.*)(?=")/.exec(line)![0] };
+
+    if (key.name && /algorithm.*/.test(line))
+      key = { ...key, algorithm: /(?<=algorithm\s).*(?=;)/.exec(line)![0] as TSIGALGORITHM };
   }
 
   configObj.zones.push(zone);
   configObj.keys.push(key);
   return configObj;
-}
+};

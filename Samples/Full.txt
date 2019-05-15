@@ -17,4 +17,8 @@ txt1    IN  TXT "hello"
 txt2    IN  TXT "world"
 txt3    IN  TXT "v=spf1 a mx a:mail.treefrog.ca a:webmail.treefrog.ca ip4:76.75.250.33"
 
+@	MX	10	mail2
+
+_http._tcp.example.com.       IN    SRV 0    5      80   www.example.com.
+
 @	IN  AAAA	2001:db8::1

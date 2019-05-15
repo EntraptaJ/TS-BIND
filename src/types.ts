@@ -23,6 +23,24 @@ export type VRECORD = {
   ttl?: number;
 }
 
+export type SRVRECORD = {
+  service: string;
+  protocol: string;
+  host: string;
+  ttl?: number;
+  priority?: number;
+  weight?: number;
+  port?: number;
+  target?: string;
+}
+
+export type MXRECORD = {
+  host: string;
+  ttl?: number;
+  preference: number;
+  value: string
+}
+
 /**
  * BIND9 Zonefile
  */
@@ -44,7 +62,9 @@ export type ZONE = {
   aaaa?: VRECORD[]
   cname?: VRECORD[]
   txt?: VRECORD[];
-  ptr?: VRECORD[]
+  ptr?: VRECORD[];
+  srv?: SRVRECORD[];
+  mx?: MXRECORD[];
 }
 
 
