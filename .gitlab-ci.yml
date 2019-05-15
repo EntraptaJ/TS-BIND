@@ -6,8 +6,12 @@ stages:
 .tests:
   image: mhart/alpine-node:latest
   stage: test
-  dependencies:
-    - prepare:deps
+  script:
+    - npm ci
+  only:
+    changes:
+      - src/**/*
+      - Samples/**/*
   variables:
     NODE_ENV: "test"
 
@@ -52,7 +56,7 @@ publish:
   only:
     - tags
   script:
-    - echo "//npm.kristianjones.xyz/:_authToken=$NPM_AUTH_TOKEN" > ~/.npmrc
-    - npm set registry https://npm.kristianjones.xyz
+    - echo "//registry.npmjs.com/:_authToken=$NPM_AUTH_TOKEN" > ~/.npmrc
+    - npm ci
     - npm run build
     - npm publish
