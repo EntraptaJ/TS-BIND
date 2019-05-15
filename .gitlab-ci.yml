@@ -1,5 +1,4 @@
 stages:
-  - prepare
   - test
   - deploy
 
@@ -14,22 +13,6 @@ stages:
       - Samples/**/*
   variables:
     NODE_ENV: "test"
-
-prepare:deps:
-  image: mhart/alpine-node:latest
-  stage: prepare
-  variables:
-    NODE_ENV: "test"
-  script:
-    - npm ci
-  artifacts:
-    paths:
-      - node_modules/
-  cache:
-    key: '$CI_BUILD_REF_NAME'
-    paths:
-      - 'node_modules/'
-
 
 test:
   extends: .tests
@@ -51,8 +34,6 @@ test:
 publish:
   image: mhart/alpine-node:latest
   stage: deploy
-  dependencies:
-    - prepare:deps
   only:
     - tags
   script:
