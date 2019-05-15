@@ -5,8 +5,6 @@ stages:
 .tests:
   image: mhart/alpine-node:latest
   stage: test
-  script:
-    - npm ci
   only:
     changes:
       - src/**/*
@@ -19,6 +17,7 @@ test:
   services:
     - docker:dind
   script:
+    - npm ci
     - npm run test
   coverage: /All\sfiles.*?\s+(\d+.\d+)/
   artifacts:
