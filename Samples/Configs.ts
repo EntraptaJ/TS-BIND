@@ -1,7 +1,7 @@
 import { BINDCONFIG } from '../src/types'
 
 export const SAMPLE1OBJ: BINDCONFIG = {
-  options: { directory: '/var/bind', pidFile: '/var/run/named/named.pid' },
+  options: { directory: '/var/bind', pidFile: '/var/run/named/named.pid', listenOn: [ 'any'], alsoNotify: ['1.1.1.1', '1.0.0.1'], allowTransfer: ['none'], allowRecursion: ['none']  },
   zones: [{ name: 'example.com', type: 'master', file: '/zones/example.com' }],
   keys: [
     {
@@ -15,7 +15,10 @@ export const SAMPLE1OBJ: BINDCONFIG = {
 export const SAMPLE1TXT = `
 options {
   directory "/var/bind";
-
+  also-notify { 
+    1.1.1.1; 
+    1.0.0.1; 
+  };
   listen-on { any; };
   listen-on-v6 { none; };
 
@@ -42,7 +45,7 @@ key "hello-world" {
 `;
 
 export const SAMPLE2OBJ: BINDCONFIG = {
-  options: { directory: '/var/stuff/bind', pidFile: '/var/run/named/named.pid' },
+  options: { directory: '/var/stuff/bind', pidFile: '/var/run/named/named.pid', listenOn: [ 'any'], allowTransfer: ['none'], allowRecursion: ['none'] },
   zones: [
     {
       name: 'example.com',
@@ -62,7 +65,7 @@ export const SAMPLE2OBJ: BINDCONFIG = {
       secret: 'HELLO-WORLD',
     },
     { algorithm: 'hmac-sha256', name: 'tst2', secret: 'HELLO-KEY' },
-  ]
+  ],
 };
 
 export const SAMPLE2TXT = `

@@ -82,6 +82,10 @@ export type BINDCONFIG = {
 export type BINDOPTIONS = {
   directory?: string;
   pidFile?: string;
+  alsoNotify?: string[]
+  listenOn?: string[]
+  allowTransfer?: string[]
+  allowRecursion?: string[];
 };
 
 export type UPDATEPOLICY = {
