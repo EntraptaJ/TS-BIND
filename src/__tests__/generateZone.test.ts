@@ -71,14 +71,14 @@ describe('Generate Zone Files', () => {
 
 	describe('Test Generated Files', () => {
 		test('Generate Tested Zone File', async () => {
-			const expectZone: ZONE = {...SAMPLE1, ns: [{ host: '@', ttl: 300, value: 'dnstest'}], ptr: [], cname: [], mx: []}
+			const expectZone: ZONE = {...SAMPLE1, ns: [{ host: '@', ttl: 300, value: 'dnstest'}]}
 			const zoneOBJ = await generateZoneFile(SAMPLE1)
 			const loadedZone = await parseZoneFile(zoneOBJ);
 			await expect(loadedZone).toStrictEqual(expectZone);
 		})
 	
 		test('Generate Tested Zone File 2', async () => {
-			const expectZone: ZONE = {...SAMPLE2, $origin: 'net.kristianjones.xyz.', ptr: [], cname: []}
+			const expectZone: ZONE = {...SAMPLE2, $origin: 'net.kristianjones.xyz.'}
 			const zoneOBJ = await generateZoneFile(SAMPLE2)
 			const loadedZone = await parseZoneFile(zoneOBJ);
 			await expect(loadedZone).toStrictEqual(expectZone);

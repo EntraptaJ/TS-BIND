@@ -61,6 +61,7 @@ export type ZONE = {
   a?: VRECORD[]
   aaaa?: VRECORD[]
   cname?: VRECORD[]
+  dname?: VRECORD[]
   txt?: VRECORD[];
   ptr?: VRECORD[];
   srv?: SRVRECORD[];

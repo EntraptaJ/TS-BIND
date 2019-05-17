@@ -13,9 +13,13 @@ www                             IN      A       127.0.0.1
 
 mail1   IN  CNAME   mail
 mail2   IN  CNAME   mail
+hello-world  IN      DNAME example.example.net.
+
 txt1    IN  TXT "hello"
 txt2    IN  TXT "world"
 txt3    IN  TXT "v=spf1 a mx a:mail.treefrog.ca a:webmail.treefrog.ca ip4:76.75.250.33"
+
+
 
 @	MX	10	mail2
 

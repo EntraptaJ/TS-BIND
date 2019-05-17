@@ -13,12 +13,12 @@ export const SAMPLE1 = {
   aaaa: [{ host: '@', value: '2001:db8::1' }],
   a: [{ host: 'sxl-knf-kfj-cg4-fw1', value: '192.0.2.5' }, { host: 'www', value: '127.0.0.1' }],
   cname: [{ host: 'mail1', value: 'mail' }, { host: 'mail2', value: 'mail' }],
+  dname: [{ host: 'hello-world', value: 'example.example.net.' }],
   txt: [
     { host: 'txt1', value: 'hello' },
     { host: 'txt2', value: 'world' },
     { host: 'txt3', value: 'v=spf1 a mx a:mail.treefrog.ca a:webmail.treefrog.ca ip4:76.75.250.33' },
   ],
-  ptr: [],
   srv: [
     { 
       host: 'example.com.',
@@ -51,9 +51,6 @@ export const SAMPLE3 = {
   a: [{ host: 'sxl-knf-kfj-cg4-fw1', value: '192.0.2.5' }, { host: 'www', value: '127.0.0.1' }],
   cname: [{ host: 'mail1', value: 'mail' }, { host: 'mail2', value: 'mail' }],
   txt: [{ host: 'txt1', value: 'hello' }, { host: 'txt2', value: 'world' }],
-  ptr: [],
-  srv: [],
-  mx: []
 };
 
 export const SAMPLE2 = {
@@ -74,7 +71,6 @@ export const SAMPLE2 = {
       value: 'HOST1.MYDOMAIN.COM.',
     },
   ],
-  aaaa: [],
   cname: [{ host: 'mail1', value: 'mail' }],
   txt: [{ host: 'txt1', value: 'v=spf1 a mx a:mail.treefrog.ca a:webmail.treefrog.ca ip4:76.75.250.33', ttl: 300 }],
   srv: [
@@ -97,8 +93,7 @@ export const SAMPLE2 = {
       target: 'ldap.example.net.',
       ttl: 300
     }
-  ],
-  mx: []
+  ]
 };
 
 export const DYNSAMPLE1 = {
@@ -113,11 +108,5 @@ export const DYNSAMPLE1 = {
     mttl: '1800',
   },
   a: [{ host: '@', value: '1.1.1.1' }, { host: 'tst1', value: '1.0.0.1' }],
-  aaaa: [],
-  cname: [],
-  ptr: [],
-  txt: [],
-  ns: [{ host: '@', value: 'dnstest.kristianjones.xyz.' }],
-  srv: [],
-  mx: []
+  ns: [{ host: '@', value: 'dnstest.kristianjones.xyz.' }]
 };
