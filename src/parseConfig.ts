@@ -3,7 +3,7 @@ import { TSIGALGORITHM, BINDCONFIG, KEYCONFIG, ZONECONFIG, ZONETYPE, UPDATEPOLIC
 const configTST = /\s+(directory|pid-file)/;
 const arryCONFTST = /\s+(also-notify|listen-on|allow-transfer|allow-recursion)\s+/;
 
-export const parseBINDConfig = async (config: string): Promise<any> => {
+export const parseBINDConfig = async (config: string): Promise<BINDCONFIG> => {
   // Async Interface for line by line processing
   const rl = config.split('\n');
 
