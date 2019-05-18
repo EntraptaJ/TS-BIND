@@ -1,0 +1,13 @@
+$ORIGIN 109.74.216.in-addr.arpa
+$TTL 86400
+
+@ IN SOA dnstest.kristianjones.xyz. me.kristianjones.xyz.hello1.kristianjones.xyz. (
+                                1          ; serial
+                                3600       ; refresh (1 hour)
+                                600        ; retry (10 minutes)
+                                604800     ; expire (1 week)
+                                1800       ; minimum (30 minutes)
+                                )
+IN NS dns.trouble-free.net.
+IN NS dns2.trouble-free.net.
+81 IN PTR my.reverse.dns.domain.com.

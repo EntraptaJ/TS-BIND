@@ -1,17 +1,15 @@
 import { parseZoneFile } from '../';
-import { SAMPLE1, SAMPLE2, DYNSAMPLE1 } from './samples';
+import { SAMPLE1, SAMPLE2, DYNSAMPLE1, REVERSE1 } from './samples';
 import { readFile } from 'fs-extra';
 
 describe('Loading Zones', () => {
-  test('Loading Sample Zone 1', async () =>
-    await expect(parseZoneFile((await readFile('Samples/Full.txt')).toString())).resolves.toStrictEqual(SAMPLE1));
+  test('Loading Sample Zone 1', async () => await expect(parseZoneFile((await readFile('Samples/Full.txt')).toString())).resolves.toStrictEqual(SAMPLE1));
 
-  test('Loading Sample Zone 2', async () =>
-    await expect(parseZoneFile((await readFile('Samples/Full2.txt')).toString())).resolves.toStrictEqual(SAMPLE2));
+  test('Loading Sample Zone 2', async () => await expect(parseZoneFile((await readFile('Samples/Full2.txt')).toString())).resolves.toStrictEqual(SAMPLE2));
 
-  test('Loading DYNDNS Sample', async () =>
-    await expect(parseZoneFile((await readFile('Samples/DYN1.txt')).toString())).resolves.toStrictEqual(DYNSAMPLE1));
+  test('Loading DYNDNS Sample', async () => await expect(parseZoneFile((await readFile('Samples/DYN1.txt')).toString())).resolves.toStrictEqual(DYNSAMPLE1));
 
+  test('Loading Reverse Sample', async () => await expect(parseZoneFile((await readFile('Samples/REVERSE1.txt')).toString())).resolves.toStrictEqual(REVERSE1));
 
   /* test('Testing K-Net', async () => {
     const file = await readFile('Samples/KNET/KNT1.txt')
@@ -28,8 +26,6 @@ describe('Loading Zones', () => {
 
   describe('Error Handling', () => {
     test('Error Handling - INVALID SANDBOX', async () =>
-      await expect(parseZoneFile((await readFile('Samples/INVALID/INVALID1.txt')).toString())).rejects.toThrowError(
-        'INVALID ZONE FILE',
-      ));
+      await expect(parseZoneFile((await readFile('Samples/INVALID/INVALID1.txt')).toString())).rejects.toThrowError('INVALID ZONE FILE'));
   });
 });

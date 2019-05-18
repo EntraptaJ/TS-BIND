@@ -1,6 +1,7 @@
 import { TSIGALGORITHM, BINDCONFIG, KEYCONFIG, ZONECONFIG, ZONETYPE, UPDATEPOLICY } from './types';
 
 const configTST = /\s+(directory|pid-file)/;
+const booleanTST = /\s+(recursion|dnssec-enable|dnssec-validation)/;
 const arryCONFTST = /\s+(also-notify|listen-on|allow-transfer|allow-recursion)\s+/;
 
 export const parseBINDConfig = async (config: string): Promise<BINDCONFIG> => {
@@ -28,9 +29,11 @@ export const parseBINDConfig = async (config: string): Promise<BINDCONFIG> => {
         .replace(/;|\s+/g, '')
         .trim()
         .split(/\s/g);
+
       if (data[0].length > 0) configObj.options[arryCONFTST.exec(line)[1].replace(/-(\D)/, (a, b) => b.toUpperCase())] = data;
       /\}/.test(line) ? (arryCONF = undefined) : (arryCONF = arryCONFTST.exec(line)[1].replace(/-(\D)/, (a, b) => b.toUpperCase()));
     }
+
     // New line array configuration option
     if (arryCONF && /\s+(\w.*);/g.test(line)) {
       configObj.options[arryCONF] ? configObj.options[arryCONF].push(/\s+(\w.*);/.exec(line)[1]) : (configObj.options[arryCONF] = [/\s+(\w.*);/.exec(line)[1]]);
@@ -38,6 +41,15 @@ export const parseBINDConfig = async (config: string): Promise<BINDCONFIG> => {
 
     // End of Array Configuration block
     if (arryCONF && /\s+\}/g.test(line)) arryCONF = undefined;
+
+    // Options Boolean
+    if (booleanTST.test(line))
+      configObj.options[
+        booleanTST
+          .exec(line)[1]
+          .replace(/-(\D)/, (a, b) => b.toUpperCase())
+          .replace('Enable', '')
+      ] = /\s(\w+);/g.exec(line)[1] == 'yes' ? true : false;
 
     // Begin of zone block
     if (/zone\s"\D.*"\s{/.test(line)) {

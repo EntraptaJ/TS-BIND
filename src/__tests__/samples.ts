@@ -35,6 +35,26 @@ export const SAMPLE1 = {
   ]
 };
 
+export const REVERSE1 = {
+  $ttl: 86400,
+  $origin: '109.74.216.in-addr.arpa',
+    soa: {
+    contact: 'me.kristianjones.xyz.hello1.kristianjones.xyz.',
+    serial: '1',
+    refresh: '3600',
+    retry: '600',
+    expire: '604800',
+    mttl: '1800',
+  },
+  ns: [
+    { host: 'tst1', value: 'dns.trouble-free.net.'},
+    { host: 'tst1', value: 'dns2.trouble-free.net.'}
+  ],
+  ptr: [
+    { host: '81', value: 'my.reverse.dns.domain.com.' },
+  ]
+}
+
 export const SAMPLE3 = {
   $origin: 'nt.kristianjones.xyz.',
   $ttl: 3600,

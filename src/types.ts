@@ -9,19 +9,13 @@ export type SOA = {
   retry: string;
   expire: string;
   mttl: string;
-}
-
-export type NS = {
-  host: string;
-  TTL?: number
-  value: string;
-}
+};
 
 export type VRECORD = {
   host: string;
   value: string;
   ttl?: number;
-}
+};
 
 export type SRVRECORD = {
   service: string;
@@ -32,14 +26,20 @@ export type SRVRECORD = {
   weight?: number;
   port?: number;
   target?: string;
-}
+};
 
 export type MXRECORD = {
   host: string;
   ttl?: number;
   preference: number;
-  value: string
-}
+  value: string;
+};
+
+/**
+ * All the possible resource record types
+ * {@link https://ftp.isc.org/www/bind/arm95/Bv9ARM.ch06.html#types_of_resource_records_and_when_to_use_them}
+ */
+export type RRType = 'ns' | 'a' | 'aaaa' | 'cname' | 'dname' | 'txt' | 'ptr' | 'srv' | 'mx';
 
 /**
  * BIND9 Zonefile
@@ -48,7 +48,7 @@ export type ZONE = {
   /**
    * Domain for the zone file
    */
-  $origin: string
+  $origin: string;
   /**
    * Optional TTL for the zonefile
    */
@@ -56,19 +56,17 @@ export type ZONE = {
   /**
    * SOA for the zonefile
    */
-  soa: SOA
-  ns: VRECORD[]
-  a?: VRECORD[]
-  aaaa?: VRECORD[]
-  cname?: VRECORD[]
-  dname?: VRECORD[]
+  soa: SOA;
+  ns: VRECORD[];
+  a?: VRECORD[];
+  aaaa?: VRECORD[];
+  cname?: VRECORD[];
+  dname?: VRECORD[];
   txt?: VRECORD[];
   ptr?: VRECORD[];
   srv?: SRVRECORD[];
   mx?: MXRECORD[];
-}
-
-
+};
 
 /**
  * BIND Configuration Types
@@ -83,9 +81,12 @@ export type BINDCONFIG = {
 export type BINDOPTIONS = {
   directory?: string;
   pidFile?: string;
-  alsoNotify?: string[]
-  listenOn?: string[]
-  allowTransfer?: string[]
+  dnssec?: boolean;
+  dnssecValidation?: boolean;
+  recursion?: boolean;
+  alsoNotify?: string[];
+  listenOn?: string[];
+  allowTransfer?: string[];
   allowRecursion?: string[];
 };
 
@@ -100,7 +101,6 @@ export type ZONECONFIG = {
   file?: string;
   updatePolicy?: UPDATEPOLICY;
 };
-
 
 /**
  * BIND9 Zone Type {@link https://ftp.isc.org/www/bind/arm95/Bv9ARM.ch06.html#id2587159}

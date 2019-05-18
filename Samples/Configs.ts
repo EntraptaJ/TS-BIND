@@ -1,7 +1,17 @@
-import { BINDCONFIG } from '../src/types'
+import { BINDCONFIG } from '../src/types';
 
 export const SAMPLE1OBJ: BINDCONFIG = {
-  options: { directory: '/var/bind', pidFile: '/var/run/named/named.pid', listenOn: [ 'any'], alsoNotify: ['1.1.1.1', '1.0.0.1'], allowTransfer: ['none'], allowRecursion: ['none']  },
+  options: {
+    directory: '/var/bind',
+    dnssec: true,
+    dnssecValidation: true,
+    recursion: false,
+    pidFile: '/var/run/named/named.pid',
+    listenOn: ['any'],
+    alsoNotify: ['1.1.1.1', '1.0.0.1'],
+    allowTransfer: ['none'],
+    allowRecursion: ['none'],
+  },
   zones: [{ name: 'example.com', type: 'master', file: '/zones/example.com' }],
   keys: [
     {
@@ -30,6 +40,8 @@ options {
 
   allow-recursion { none; };
   recursion no;
+  dnssec-enable yes;
+  dnssec-validation yes;
 };
 
 zone "example.com" {
@@ -45,7 +57,14 @@ key "hello-world" {
 `;
 
 export const SAMPLE2OBJ: BINDCONFIG = {
-  options: { directory: '/var/stuff/bind', pidFile: '/var/run/named/named.pid', listenOn: [ 'any'], allowTransfer: ['none'], allowRecursion: ['none'] },
+  options: {
+    directory: '/var/stuff/bind',
+    pidFile: '/var/run/named/named.pid',
+    listenOn: ['any'],
+    allowTransfer: ['none'],
+    allowRecursion: ['none'],
+    recursion: false,
+  },
   zones: [
     {
       name: 'example.com',
@@ -53,8 +72,8 @@ export const SAMPLE2OBJ: BINDCONFIG = {
       file: '/zones/example.com',
       updatePolicy: {
         grant: 'hello-world',
-        zonesub: 'ANY'
-      }
+        zonesub: 'ANY',
+      },
     },
     { name: 'tst.example.com', type: 'master', file: '/zones/tst.example.com' },
   ],
