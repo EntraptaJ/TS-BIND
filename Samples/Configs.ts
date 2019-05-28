@@ -57,6 +57,13 @@ key "hello-world" {
 `;
 
 export const SAMPLE2OBJ: BINDCONFIG = {
+  controls: {
+    inet: {
+      allow: 'localhost',
+      keys: 'rndc-key',
+      source: '127.0.0.1'
+    }
+  },
   options: {
     directory: '/var/stuff/bind',
     pidFile: '/var/run/named/named.pid',
@@ -88,6 +95,11 @@ export const SAMPLE2OBJ: BINDCONFIG = {
 };
 
 export const SAMPLE2TXT = `
+controls {
+  inet 127.0.0.1 allow { localhost; } keys { "rndc-key"; };
+};
+
+
 options {
   directory "/var/stuff/bind";
 

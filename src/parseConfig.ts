@@ -1,25 +1,42 @@
-import { TSIGALGORITHM, BINDCONFIG, KEYCONFIG, ZONECONFIG, ZONETYPE, UPDATEPOLICY } from './types';
+import { TSIGALGORITHM, BINDCONFIG, KEYCONFIG, ZONECONFIG, ZONETYPE, UPDATEPOLICY, CONTROLSCONFIG } from './types';
+
+const MDEND = /^\}/;
 
 const configTST = /\s+(directory|pid-file)/;
 const booleanTST = /\s+(recursion|dnssec-enable|dnssec-validation)/;
 const arryCONFTST = /\s+(also-notify|listen-on|allow-transfer|allow-recursion)\s+/;
+const keyCONFTST = /(algorithm|secret)/;
 
 export const parseBINDConfig = async (config: string): Promise<BINDCONFIG> => {
   // Async Interface for line by line processing
   const rl = config.split('\n');
 
-  let zone: ZONECONFIG = {};
-  let options: boolean = false;
-  let file: string = '';
-  let key: KEYCONFIG = {};
+  type PARSEMODE = 'key' | 'controls' | 'zone' | 'options';
+
+  let mode: PARSEMODE;
   let arryCONF: string = undefined;
-  let configObj: BINDCONFIG = { options: {}, zones: [], keys: [] };
+  let configObj: BINDCONFIG = { options: {}, zones: [] };
   for (const line of rl) {
     // Begin and End of options block
-    if (/options\s{/.test(line) || (options && /^\}/.test(line))) options = !options;
+    if (/options\s{/.test(line)) mode = 'options';
+
+    // Controls Block
+    if (/controls\s{/.test(line)) mode = 'controls';
+
+    if (/inet.*/.test(line) && mode === 'controls')
+      configObj.controls = {
+        inet: {
+          ...(/(?<!intet\s)(?<source>\d+\.\d+\.\d\.\d|\*)\sallow\s{\s(?<allow>\w+);\s}\skeys\s{\s"(?<keys>.*)"/.exec(line).groups as {
+            source: string;
+            allow: string;
+            keys: string;
+          }),
+        },
+      };
 
     // Directory Option
-    if (configTST.test(line) && options) configObj.options[configTST.exec(line)[1].replace(/-(\D)/, (a, b) => b.toUpperCase())] = /(?<=")(.*)(?=")/.exec(line)![0];
+    if (configTST.test(line) && mode === 'options')
+      configObj.options[configTST.exec(line)[1].replace(/-(\D)/, (a, b) => b.toUpperCase())] = /(?<=")(.*)(?=")/.exec(line)![0];
 
     // Array Configuration Options
     if (arryCONFTST.test(line)) {
@@ -51,36 +68,34 @@ export const parseBINDConfig = async (config: string): Promise<BINDCONFIG> => {
           .replace('Enable', '')
       ] = /\s(\w+);/g.exec(line)[1] == 'yes' ? true : false;
 
-    // Begin of zone block
+    // Key Block
     if (/zone\s"\D.*"\s{/.test(line)) {
-      if (zone.name) configObj.zones.push(zone);
-      zone = { name: /(?<=")(.*)(?=")/.exec(line)![0] };
+      mode = 'zone';
+      if (!configObj.zones) configObj.zones = [{ name: /(?<=")(.*)(?=")/.exec(line)![0] }];
+      else configObj.zones.push({ name: /(?<=")(.*)(?=")/.exec(line)![0] });
     }
-
     // Zone type
-    if (zone.name && /type.*/.test(line)) zone = { ...zone, type: /(?<=type\s).*(?=;)/.exec(line)![0] as ZONETYPE };
+    if (/type.*/.test(line) && mode === 'zone') configObj.zones[configObj.zones.length - 1].type = /(?<=type\s).*(?=;)/.exec(line)![0] as ZONETYPE;
 
     // Zone file location
-    if (zone.name && /\sfile\s".*";/.test(line)) {
-      file = /(?<=")(.*)(?=")/.exec(line)![0];
-      zone = { ...zone, file };
-    }
+    if (/\sfile\s".*";/.test(line) && mode === 'zone') configObj.zones[configObj.zones.length - 1].file = /(?<=")(.*)(?=")/.exec(line)![0];
 
     // Zone update policy
-    if (zone.name && /update-policy\s{/.test(line)) zone.updatePolicy = { grant: /grant\s+(\S+)\s/.exec(line)[1], zonesub: /\szonesub\s(\S+);/.exec(line)[1] };
+    if (/update-policy\s{/.test(line) && mode === 'zone')
+      configObj.zones[configObj.zones.length - 1].updatePolicy = { grant: /grant\s+(\S+)\s/.exec(line)[1], zonesub: /\szonesub\s(\S+);/.exec(line)[1] };
 
-    // Begin of Key Block
+    // Key Block
     if (/key\s"\D.*"\s{/.test(line)) {
-      if (key.name) configObj.keys.push(key);
-      key = { name: /(?<=")(.*)(?=")/.exec(line)![0] };
+      mode = 'key';
+      if (!configObj.keys) configObj.keys = [{ name: /(?<=")(.*)(?=")/.exec(line)![0] }];
+      else configObj.keys.push({ name: /(?<=")(.*)(?=")/.exec(line)![0] });
     }
 
-    if (key.name && /secret.*/.test(line)) key = { ...key, secret: /(?<=")(.*)(?=")/.exec(line)![0] };
+    if (mode === 'key' && /secret.*/.test(line)) configObj.keys[configObj.keys.length - 1].secret = /(?<=")(.*)(?=")/.exec(line)![0];
 
-    if (key.name && /algorithm.*/.test(line)) key = { ...key, algorithm: /(?<=algorithm\s).*(?=;)/.exec(line)![0] as TSIGALGORITHM };
+    if (mode === 'key' && /algorithm.*/.test(line)) configObj.keys[configObj.keys.length - 1].algorithm = /(?<=algorithm\s).*(?=;)/.exec(line)![0] as TSIGALGORITHM;
+
+    if (MDEND.test(line)) mode = undefined;
   }
-
-  configObj.zones.push(zone);
-  configObj.keys.push(key);
   return configObj;
 };

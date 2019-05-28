@@ -68,6 +68,8 @@ export type ZONE = {
   mx?: MXRECORD[];
 };
 
+
+
 /**
  * BIND Configuration Types
  */
@@ -75,7 +77,8 @@ export type ZONE = {
 export type BINDCONFIG = {
   options: BINDOPTIONS;
   zones: ZONECONFIG[];
-  keys: KEYCONFIG[];
+  keys?: KEYCONFIG[];
+  controls?: CONTROLSCONFIG
 };
 
 export type BINDOPTIONS = {
@@ -89,6 +92,8 @@ export type BINDOPTIONS = {
   allowTransfer?: string[];
   allowRecursion?: string[];
 };
+
+
 
 export type UPDATEPOLICY = {
   grant?: string;
@@ -117,3 +122,13 @@ export type KEYCONFIG = {
   secret?: string;
   algorithm?: TSIGALGORITHM;
 };
+
+export type CONTROLSCONFIG = {
+  inet: {
+    source: string;
+    allow: string;
+    keys: string;
+    
+
+  }
+}
