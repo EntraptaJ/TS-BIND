@@ -4,16 +4,12 @@ const reduce: { [mode: string]: 'zones' | 'keys' } = { zone: 'zones', key: 'keys
 
 const MDEND = /^\}/;
 
-const configTST = /(directory|pid-file)\s/;
-const strTST = /\s+(directory|pid-file)/
-const booleanTST = /(?<=\s+|^)(recursion|dnssec-enable|dnssec-validation)/;
+const strTST = /\s+(directory|pid-file)/;
+const booleanTST = /(?<=\s+|^)(recursion|dnssec-enable|dnssec-validation|inline-signing|notify)/;
 const arryCONFTST = /(also-notify|listen-on|allow-transfer|allow-recursion)\s/;
 const znSTRTEST = /\s(file|key-directory)/;
 
 const mdTST = /(key|zone)\s\"(\S+)\"\s/;
-
-// Zone Tests
-const znBOOLTST = /(notify|inline-signing)/;
 
 // Key Tests
 const keyCONFTST = /(algorithm|secret)/;
@@ -61,13 +57,10 @@ export const parseBINDConfig = async (config: string): Promise<BINDCONFIG> => {
         },
       };
 
-
-    if (strTST.test(line)) {
-      configObj[mode][strTST.exec(line)[1].replace(/-(\D)/, (a, b) => b.toUpperCase())] = /(?<=")(.*)(?=")/.exec(line)![0]
-    }
+    if (strTST.test(line)) configObj[mode][strTST.exec(line)[1].replace(/-(\D)/, (a, b) => b.toUpperCase())] = /(?<=")(.*)(?=")/.exec(line)![0];
 
     // Options Mode String Test
-   //  if (configTST.test(line)) configObj.options[configTST.exec(line)[1].replace(/-(\D)/, (a, b) => b.toUpperCase())] = /(?<=")(.*)(?=")/.exec(line)![0];
+    //  if (configTST.test(line)) configObj.options[configTST.exec(line)[1].replace(/-(\D)/, (a, b) => b.toUpperCase())] = /(?<=")(.*)(?=")/.exec(line)![0];
 
     // Array Configuration Options
     if (arryCONFTST.test(line)) {
@@ -77,6 +70,7 @@ export const parseBINDConfig = async (config: string): Promise<BINDCONFIG> => {
         .replace(/;|\s+/g, '')
         .trim()
         .split(/\s/g);
+
       if (data[0].length > 0) {
         if (mode === 'keys' || mode === 'zones')
           configObj[mode][configObj[mode].length - 1][arryCONFTST.exec(line)[1].replace(/-(\D)/, (a, b) => b.toUpperCase())] = data;
@@ -102,12 +96,20 @@ export const parseBINDConfig = async (config: string): Promise<BINDCONFIG> => {
      * Options Block Yes/No Parser
      */
     if (booleanTST.test(line)) {
-      configObj.options[
-        booleanTST
-          .exec(line)[1]
-          .replace(/-(\D)/, (a, b) => b.toUpperCase())
-          .replace('Enable', '')
-      ] = /(\w+);/g.exec(line)[1] == 'yes' ? true : false;
+      if (!subMode)
+        configObj[mode][
+          booleanTST
+            .exec(line)[1]
+            .replace(/-(\D)/, (a, b) => b.toUpperCase())
+            .replace('Enable', '')
+        ] = /(\w+);/g.exec(line)[1] == 'yes' ? true : false;
+      else
+        configObj[mode][subMode][
+          booleanTST
+            .exec(line)[1]
+            .replace(/-(\D)/, (a, b) => b.toUpperCase())
+            .replace('Enable', '')
+        ] = /(\w+);/g.exec(line)[1] == 'yes' ? true : false;
     }
     /**
      * Zone Block Type parser
@@ -123,15 +125,6 @@ export const parseBINDConfig = async (config: string): Promise<BINDCONFIG> => {
     // Zone Block Update Policy Parser
     if (/update-policy\s{/.test(line) && mode === 'zones')
       configObj.zones[configObj.zones.length - 1].updatePolicy = { grant: /grant\s+(\S+)\s/.exec(line)[1], zonesub: /\szonesub\s(\S+);/.exec(line)[1] };
-
-    // Zone Block Yes/No Parser
-    if (/\s+(notify|inline-signing)/.test(line) && mode === 'zones')
-      configObj.zones[configObj.zones.length - 1][
-        /\s+(notify|inline-signing)/
-          .exec(line)[1]
-          .replace(/-(\D)/, (a, b) => b.toUpperCase())
-          .replace('Enable', '')
-      ] = /\s(\w+);/g.exec(line)[1] == 'yes' ? true : false;
 
     if (/(auto-dnssec)/.test(line) && mode === 'zones')
       configObj.zones[configObj.zones.length - 1].autoDNSSEC = /(?<=auto-dnssec\s)(\w+)/.exec(line)[1] as AUTODNSSEC;
