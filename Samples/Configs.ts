@@ -46,7 +46,7 @@ options {
 
 zone "example.com" {
     type master;
-auto-dnssec maintain;
+    auto-dnssec maintain;
     file "/zones/example.com";
 };
 
@@ -119,8 +119,8 @@ options {
 
 zone "example.com" {
     type master;
-    update-policy { grant hello-world zonesub ANY; };
-    file "/zones/example.com";
+  update-policy { grant hello-world zonesub ANY; };
+  file "/zones/example.com";
 };
 
 zone "tst.example.com" {
