@@ -76,7 +76,7 @@ export type ZONE = {
 
 export type BINDCONFIG = {
   options: BINDOPTIONS;
-  zones: ZONECONFIG[];
+  zones?: ZONECONFIG[];
   keys?: KEYCONFIG[];
   controls?: CONTROLSCONFIG
 };
@@ -103,7 +103,13 @@ export type UPDATEPOLICY = {
 export type ZONECONFIG = {
   name?: string;
   type?: ZONETYPE;
-  file?: string;
+  file?: string
+  autoDNSSEC?: AUTODNSSEC
+  inlineSigning?: boolean;
+  keyDirectory?: string;
+  allowTransfer?: string[]
+  alsoNotify?: string[]
+  notify?: boolean;
   updatePolicy?: UPDATEPOLICY;
 };
 
@@ -116,6 +122,8 @@ export type ZONETYPE = 'master' | 'slave' | 'stub' | 'forward' | 'hint' | 'deleg
  * BIND9 TSIG Algroth {@link https://ftp.isc.org/www/bind/arm95/Bv9ARM.ch06.html#id2574798}
  */
 export type TSIGALGORITHM = 'hmac-md5' | 'hmac-sha1' | 'hmac-sha224' | 'hmac-sha256' | 'hmac-sha384' | 'hmac-sha512';
+
+export type AUTODNSSEC = 'off' | 'allow' | 'maintain' 
 
 export type KEYCONFIG = {
   name?: string;

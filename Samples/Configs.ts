@@ -12,7 +12,7 @@ export const SAMPLE1OBJ: BINDCONFIG = {
     allowTransfer: ['none'],
     allowRecursion: ['none'],
   },
-  zones: [{ name: 'example.com', type: 'master', file: '/zones/example.com' }],
+  zones: [{ name: 'example.com', type: 'master', file: '/zones/example.com', autoDNSSEC: 'maintain' }],
   keys: [
     {
       algorithm: 'hmac-sha256',
@@ -46,6 +46,7 @@ options {
 
 zone "example.com" {
     type master;
+auto-dnssec maintain;
     file "/zones/example.com";
 };
 
@@ -61,8 +62,8 @@ export const SAMPLE2OBJ: BINDCONFIG = {
     inet: {
       allow: 'localhost',
       keys: 'rndc-key',
-      source: '127.0.0.1'
-    }
+      source: '127.0.0.1',
+    },
   },
   options: {
     directory: '/var/stuff/bind',
@@ -82,7 +83,7 @@ export const SAMPLE2OBJ: BINDCONFIG = {
         zonesub: 'ANY',
       },
     },
-    { name: 'tst.example.com', type: 'master', file: '/zones/tst.example.com' },
+    { name: 'tst.example.com', type: 'master', file: '/zones/tst.example.com', notify: true, inlineSigning: true, keyDirectory: '/etc/bind/keys', allowTransfer: ['192.168.255.16'], alsoNotify: ['192.168.255.16'], autoDNSSEC: 'maintain' },
   ],
   keys: [
     {
@@ -125,6 +126,14 @@ zone "example.com" {
 zone "tst.example.com" {
   type master;
   file "/zones/tst.example.com";
+  allow-transfer { 192.168.255.16; };
+  also-notify { 
+    192.168.255.16; 
+  };
+  notify yes;
+  inline-signing yes;
+  key-directory "/etc/bind/keys";
+  auto-dnssec maintain;
 };
 
 key "hello-world" {
