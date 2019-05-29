@@ -1,3 +1,5 @@
-export { parseZoneFile, ProcessValueRecord } from './parseZone';
-export { generateZoneFile } from './createZone';
-export { parseBINDConfig } from './parseConfig';
+export * from './parseZone';
+export * from './createZone';
+export * from './parseConfig';
+export * from './createConfig'
+export * from './types'

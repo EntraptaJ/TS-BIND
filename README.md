@@ -13,7 +13,7 @@ Loading
 import { parseZoneFile } from 'ts-zone-file';
 import { readFile } from 'fs-extras'
 const file = await readFile('/zones/example.com');
-const zone = await parseZoneFile(zoneFileString.toString())
+const zone = await parseZoneFile(file.toString())
 ```
 
 Appending
@@ -33,4 +33,20 @@ import { generateZoneFile } from 'ts-zone-file';
 import { writeFile } from 'fs-extras'
 const string = await generateZoneFile(zone);
 await writeFile('/zones/example.com', string)
+```
+
+## Parse named.conf
+```ts
+import { parseBINDConfig } from 'ts-zone-file';
+import { readFile } from 'fs-extras'
+const file = await readFile('/named.conf');
+const zone = await parseBINDConfig(file.toString())
+```
+
+## Generate named.conf
+```ts
+import { generateConfig } from 'ts-zone-file';
+import { writeFile } from 'fs-extras'
+const string = await generateConfig(SAMPLE2OBJ)
+await writeFile('/named.conf', string)
 ```

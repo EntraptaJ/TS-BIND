@@ -1,6 +1,6 @@
 import { BINDCONFIG } from './types';
 
-export const createConfig = async (config: BINDCONFIG): Promise<string> => {
+export const generateConfig = async (config: BINDCONFIG): Promise<string> => {
   const configString = `
 ${config.controls &&
   `controls {
