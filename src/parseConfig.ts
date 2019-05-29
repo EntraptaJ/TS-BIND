@@ -4,15 +4,14 @@ const reduce: { [mode: string]: 'zones' | 'keys' } = { zone: 'zones', key: 'keys
 
 const MDEND = /^\}/;
 
-const strTST = /\s+(directory|pid-file)/;
+const strTST = /(?<=\s+|^)(directory|pid-file|secret|key-directory|file)/;
 const booleanTST = /(?<=\s+|^)(recursion|dnssec-enable|dnssec-validation|inline-signing|notify)/;
 const arryCONFTST = /(also-notify|listen-on|allow-transfer|allow-recursion)\s/;
-const znSTRTEST = /\s(file|key-directory)/;
 
 const mdTST = /(key|zone)\s\"(\S+)\"\s/;
 
 // Key Tests
-const keyCONFTST = /(algorithm|secret)/;
+const keyCONFTST = /(algorithm)/;
 
 export const parseBINDConfig = async (config: string): Promise<BINDCONFIG> => {
   // Async Interface for line by line processing
@@ -57,8 +56,9 @@ export const parseBINDConfig = async (config: string): Promise<BINDCONFIG> => {
         },
       };
 
-    if (strTST.test(line)) configObj[mode][strTST.exec(line)[1].replace(/-(\D)/, (a, b) => b.toUpperCase())] = /(?<=")(.*)(?=")/.exec(line)![0];
-
+    if (strTST.test(line)) {
+      typeof subMode !== 'undefined' ? configObj[mode][subMode][strTST.exec(line)[1].replace(/-(\D)/, (a, b) => b.toUpperCase())] = /(?<=")(.*)(?=")/.exec(line)![0] : configObj[mode][strTST.exec(line)[1].replace(/-(\D)/, (a, b) => b.toUpperCase())] = /(?<=")(.*)(?=")/.exec(line)![0];
+    }
     // Options Mode String Test
     //  if (configTST.test(line)) configObj.options[configTST.exec(line)[1].replace(/-(\D)/, (a, b) => b.toUpperCase())] = /(?<=")(.*)(?=")/.exec(line)![0];
 
@@ -116,20 +116,12 @@ export const parseBINDConfig = async (config: string): Promise<BINDCONFIG> => {
      */
     if (/type.*/.test(line) && mode === 'zones') configObj.zones[subMode].type = /(?<=type\s).*(?=;)/.exec(line)![0] as ZONETYPE;
 
-    /**
-     * Zone Block String Parser
-     */
-    if (znSTRTEST.test(line) && mode === 'zones')
-      configObj.zones[subMode][znSTRTEST.exec(line)[1].replace(/-(\D)/, (a, b) => b.toUpperCase())] = /(?<=")(.*)(?=")/.exec(line)![0];
-
     // Zone Block Update Policy Parser
     if (/update-policy\s{/.test(line) && mode === 'zones')
       configObj.zones[configObj.zones.length - 1].updatePolicy = { grant: /grant\s+(\S+)\s/.exec(line)[1], zonesub: /\szonesub\s(\S+);/.exec(line)[1] };
 
     if (/(auto-dnssec)/.test(line) && mode === 'zones')
       configObj.zones[configObj.zones.length - 1].autoDNSSEC = /(?<=auto-dnssec\s)(\w+)/.exec(line)[1] as AUTODNSSEC;
-
-    if (mode === 'keys' && /secret.*/.test(line)) configObj.keys[configObj.keys.length - 1].secret = /(?<=")(.*)(?=")/.exec(line)![0];
 
     if (mode === 'keys' && /algorithm.*/.test(line)) configObj.keys[configObj.keys.length - 1].algorithm = /(?<=algorithm\s).*(?=;)/.exec(line)![0] as TSIGALGORITHM;
 
