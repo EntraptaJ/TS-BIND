@@ -9,6 +9,7 @@ const booleanTST = /(?<=\s+|^)(recursion|dnssec-enable|dnssec-validation|inline-
 const arryCONFTST = /(also-notify|listen-on|allow-transfer|allow-recursion)\s/;
 
 const mdTST = /(key|zone)\s\"(\S+)\"\s/;
+const incTST = /include/
 
 // Key Tests
 const keyCONFTST = /(algorithm)/;
@@ -31,6 +32,8 @@ export const parseBINDConfig = async (config: string): Promise<BINDCONFIG> => {
 
     // Controls Block
     if (/controls\s{/.test(line)) mode = 'controls';
+
+    if (incTST.test(line)) configObj.include ? configObj.include.push(/(?<=")(.*)(?=")/.exec(line)![0]) : configObj.include = [/(?<=")(.*)(?=")/.exec(line)![0]]
 
     // Zone/Key Mode Detector
     if (mdTST.test(line)) {

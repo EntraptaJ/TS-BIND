@@ -2,10 +2,12 @@ import { BINDCONFIG } from './types';
 
 export const generateConfig = async (config: BINDCONFIG): Promise<string> => {
   const configString = `
-${config.controls &&
+${config.include ? `${config.include.map((str) => `include "${str}";\n`).join('')}` : ''}
+
+${config.controls ?
   `controls {
     inet ${config.controls.inet.source} allow { ${config.controls.inet.allow}; } keys { "${config.controls.inet.keys}"; };
-};`}
+};` : ''}
 
 options {
     ${config.options.directory ? `directory "${config.options.directory}";` : ``}

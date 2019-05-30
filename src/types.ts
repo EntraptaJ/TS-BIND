@@ -75,6 +75,7 @@ export type ZONE = {
  */
 
 export type BINDCONFIG = {
+  include?: string[]
   options: BINDOPTIONS;
   zones?: ZONECONFIG[];
   keys?: KEYCONFIG[];

@@ -58,6 +58,7 @@ key "hello-world" {
 `;
 
 export const SAMPLE2OBJ: BINDCONFIG = {
+  include: ['/etc/rndc.key'],
   controls: {
     inet: {
       allow: 'localhost',
@@ -96,6 +97,8 @@ export const SAMPLE2OBJ: BINDCONFIG = {
 };
 
 export const SAMPLE2TXT = `
+include "/etc/rndc.key";
+
 controls {
   inet 127.0.0.1 allow { localhost; } keys { "rndc-key"; };
 };
