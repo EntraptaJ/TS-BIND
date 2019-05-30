@@ -1,4 +1,6 @@
-export const SAMPLE1 = {
+import { ZONE  } from '../types'
+
+export const SAMPLE1: ZONE = {
   $origin: 'nt.kristianjones.xyz.',
   $ttl: 3600,
   ns: [{ host: '@', value: 'ns1.kristianjones.xyz.' }],
@@ -32,7 +34,8 @@ export const SAMPLE1 = {
   ],
   mx: [
     { host: '@', preference: 10, value: 'mail2'}
-  ]
+  ],
+  caa: [{ flags: 0, host: 'example.com.', tag: 'issue', value: 'comodo.com' }]
 };
 
 export const REVERSE1 = {
@@ -113,7 +116,8 @@ export const SAMPLE2 = {
       target: 'ldap.example.net.',
       ttl: 300
     }
-  ]
+  ],
+  caa: [{ flags: 0, ttl: 300, host: 'example.com.', tag: 'issue', value: 'comodo.com' }]
 };
 
 export const DYNSAMPLE1 = {

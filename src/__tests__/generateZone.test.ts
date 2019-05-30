@@ -24,7 +24,8 @@ const SAMPLE1: ZONE = {
 		protocol: '_tcp',
 		service: '_http',
 		target: 'www.example.com.'
-	}]
+	}],
+	caa: [{ flags: 0, ttl: 300, host: 'example.com.', tag: 'issue', value: 'comodo.com' }]
 }
 
 const SAMPLE2: ZONE = {

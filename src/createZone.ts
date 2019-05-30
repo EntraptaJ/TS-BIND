@@ -1,4 +1,4 @@
-import { ZONE, VRECORD, SOA, SRVRECORD, MXRECORD } from './types';
+import { ZONE, VRECORD, SOA, SRVRECORD, MXRECORD, CAARecord } from './types';
 
 let RCD: { [key: string]: string[] } = {};
 
@@ -6,13 +6,15 @@ export const generateZoneFile = async (zone: ZONE): Promise<string> => {
   RCD = {};
 
   let map = Object.entries(zone);
-  const valuemap = map.filter(a => a[0] !== 'srv' && a[0] !== 'mx') as [string, string | number | SOA | VRECORD[]][];
+  const valuemap = map.filter(a => a[0] !== 'srv' && a[0] !== 'mx' && a[0] !== 'caa') as [string, string | number | SOA | VRECORD[]][];
   const prefmap = map.filter(a => a[0] === 'mx').sort() as [string, MXRECORD[]][];
   const srvmap = map.filter(a => a[0] === 'srv').sort() as [string, SRVRECORD[]][];
+  const caamap = map.filter(a => a[0] === 'caa').sort() as [string, CAARecord[]][];
   const promises = [
     Promise.all(valuemap.map(async item => await processValueOBJ(item))),
     Promise.all(srvmap.map(async item => await processSRVOBJ(item))),
     Promise.all(prefmap.map(async item => await processPREFOBJ(item))),
+    Promise.all(caamap.map(async item => await processCAAOBJ(item)))
   ];
   await Promise.all(promises);
   const zoneText = `
@@ -56,3 +58,9 @@ export const processPREFOBJ = async ([key, a]: [string, MXRECORD[]]) =>
     if (!RCD[key]) RCD[key] = [line];
     else RCD[key].push(line);
   });
+
+export const processCAAOBJ = async ([key, a]: [string, CAARecord[]]) => a.map(async obj => {
+  const line = `\n${obj.host}\t${obj.ttl ? `${obj.ttl}\t` : ''}IN\t${key.toUpperCase()}\t${obj.flags}\t${obj.tag}\t${obj.value}`
+  if (!RCD[key]) RCD[key] = [line];
+  else RCD[key].push(line);
+})

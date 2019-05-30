@@ -1,10 +1,22 @@
-import { ZONE, VRECORD, SOA, SRVRECORD, MXRECORD } from './types';
+import { ZONE, VRECORD, SOA, SRVRECORD, MXRECORD, CAARecord, CAATAG } from './types';
 
 const VALUEXP = /\s+(NS|CNAME|TXT|PTR|A|AAAA|DNAME)\s+/;
 const VALUETST = /(NS|CNAME|TXT|PTR|A|AAAA|IN|DNAME)/;
-const PREFTST = /\s+MX\s+/;
+const PREFTST = /\s+(MX|CAA)\s+/;
 let curhost: string;
 
+/**
+ * Takes BIND9 Zonefile as string, parses it and returns an object of the values within the zone
+ * @param zone Valid BIND9 Zonefile as a string
+ * @example 
+ * ```typescript
+ * import { parseZoneFile } from 'ts-zone-file';
+ * import { readFile } from 'fs-extra';
+ * const file = await readFile('/zones/example.com');
+ * const zone = await parseZoneFile(file.toString());
+ * if (zone.a) zone.a.map((RR) => console.log(RR.host, RR.ttl, RR.value));
+ * ```
+ */
 export const parseZoneFile = async (zone: string): Promise<ZONE> => {
   // Async Interface for line by line processing
   const rl = zone.split('\n');
@@ -43,7 +55,9 @@ export const parseZoneFile = async (zone: string): Promise<ZONE> => {
         ? Zone[VALUEXP.exec(line)[1].toLowerCase()].push({ ...(await ProcessValueRecord(line)) })
         : (Zone[VALUEXP.exec(line)[1].toLowerCase()] = [{ ...(await ProcessValueRecord(line)) }]);
     else if (/\s+SRV\s+/.test(uLine)) Zone.srv ? Zone.srv.push(await ProcessSRV(line)) : Zone.srv = [{...await ProcessSRV(line)}];
-    else if (/\s+MX\s+/.test(uLine)) Zone.mx ? Zone.mx.push(await ProcessPref(line)) : Zone.mx = [{...await ProcessPref(line)}];
+    else if (/\s+(MX)\s+/.test(uLine)) Zone.mx ? Zone.mx.push(await ProcessPref(line)) : Zone.mx = [{...await ProcessPref(line)}];
+    else if (/\s+(CAA)\s/.test(uLine)) Zone.caa ? Zone.caa.push(await ProcessCAA(line)) : Zone.caa = [{...await ProcessCAA(line)}]
+
   }
   // If their is no SOA at this point it is an INVALID Zone File
   if (soa.length === 0) throw new Error('INVALID ZONE FILE');
@@ -65,8 +79,8 @@ export const parseZoneFile = async (zone: string): Promise<ZONE> => {
  * Extracts TTL, host, and value from a zonefile line
  * @param line line of Zonefile
  * @exmaple
- * ```ts
- * const line = '@     300    IN    NS     ns1.exmaple.xyz.'
+ * ```typescript
+ * const line = 'example.com.    300    IN    NS     ns1.exmaple.xyz.'
  * const { ttl, host, value } = await ProcessValueRecord(value)
  * ```
  */
@@ -110,3 +124,10 @@ export const ProcessPref = async (line: string): Promise<MXRECORD> => {
   let returnObj: MXRECORD = { host: hostRR, preference: parseInt(rr[rr.length - 2]), value: rr[rr.length - 1] };
   return returnObj;
 };
+
+export const ProcessCAA = async (line: string): Promise<CAARecord> => {
+  const [hostRR, ...rr] = line.trim().split(/\s+/g);
+  const returnOBJ: CAARecord = { host: hostRR, flags: parseInt(rr[rr.length - 3]), tag: rr[rr.length - 2] as CAATAG, value: rr[rr.length - 1].replace(/\"/g, '')}
+  if (!isNaN(parseInt(rr[0])) && rr.length > 1) returnOBJ.ttl = parseInt(rr[0]);
+  return returnOBJ;
+}

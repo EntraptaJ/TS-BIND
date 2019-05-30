@@ -35,11 +35,27 @@ export type MXRECORD = {
   value: string;
 };
 
+export enum CAATAGENUM {
+  'issue',
+  'issuewild',
+  'iodef'
+}
+
+export type CAATAG = CAATAGENUM | 'issue' | 'issuewild' | 'iodef'
+
+export type CAARecord = {
+  host: string;
+  ttl?: number
+  flags: number
+  tag: CAATAG
+  value: string
+}
+
 /**
  * All the possible resource record types
  * {@link https://ftp.isc.org/www/bind/arm95/Bv9ARM.ch06.html#types_of_resource_records_and_when_to_use_them}
  */
-export type RRType = 'ns' | 'a' | 'aaaa' | 'cname' | 'dname' | 'txt' | 'ptr' | 'srv' | 'mx';
+export type RRType = 'ns' | 'a' | 'aaaa' | 'cname' | 'dname' | 'txt' | 'ptr' | 'srv' | 'mx' | 'caa';
 
 /**
  * BIND9 Zonefile
@@ -60,6 +76,7 @@ export type ZONE = {
   ns: VRECORD[];
   a?: VRECORD[];
   aaaa?: VRECORD[];
+  caa?: CAARecord[]
   cname?: VRECORD[];
   dname?: VRECORD[];
   txt?: VRECORD[];
@@ -117,14 +134,37 @@ export type ZONECONFIG = {
 /**
  * BIND9 Zone Type {@link https://ftp.isc.org/www/bind/arm95/Bv9ARM.ch06.html#id2587159}
  */
-export type ZONETYPE = 'master' | 'slave' | 'stub' | 'forward' | 'hint' | 'delegation-only';
+export type ZONETYPE = ZONETYPEENUM | 'master' | 'slave' | 'stub' | 'forward' | 'hint' | 'delegation-only';
+
+export enum ZONETYPEENUM {
+  'master' = 'master',
+  'slave' = 'slave',
+  'stub' = 'stub',
+  'forward' = 'forward',
+  'hint'  = 'hint'
+}
 
 /**
  * BIND9 TSIG Algroth {@link https://ftp.isc.org/www/bind/arm95/Bv9ARM.ch06.html#id2574798}
  */
-export type TSIGALGORITHM = 'hmac-md5' | 'hmac-sha1' | 'hmac-sha224' | 'hmac-sha256' | 'hmac-sha384' | 'hmac-sha512';
+export type TSIGALGORITHM =  TSIGALGORITHMENUM | 'hmac-md5' | 'hmac-sha1' | 'hmac-sha224' | 'hmac-sha256' | 'hmac-sha384' | 'hmac-sha512';
 
-export type AUTODNSSEC = 'off' | 'allow' | 'maintain' 
+export enum TSIGALGORITHMENUM {
+  MD5 = 'hmac-md5',
+  SHA1 = 'hmac-sha1',
+  SHA224 = 'hmac-sha224',
+  SHA256 = 'hmac-sha256',
+  SHA384 = 'hmac-sha384',
+  SHA512 = 'hmac-sha512'
+}
+
+export type AUTODNSSEC = AUTODNSSECENUM | 'off' | 'allow' | 'maintain' 
+
+export enum AUTODNSSECENUM {
+  'off' = 'off',
+  'allow' = 'allow',
+  'maintain' = 'maintain'
+}
 
 export type KEYCONFIG = {
   name: string;
