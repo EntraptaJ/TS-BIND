@@ -102,9 +102,9 @@ export type UPDATEPOLICY = {
 };
 
 export type ZONECONFIG = {
-  name?: string;
-  type?: ZONETYPE;
-  file?: string
+  name: string;
+  type: ZONETYPE;
+  file: string
   autoDNSSEC?: AUTODNSSEC
   inlineSigning?: boolean;
   keyDirectory?: string;
@@ -127,9 +127,9 @@ export type TSIGALGORITHM = 'hmac-md5' | 'hmac-sha1' | 'hmac-sha224' | 'hmac-sha
 export type AUTODNSSEC = 'off' | 'allow' | 'maintain' 
 
 export type KEYCONFIG = {
-  name?: string;
-  secret?: string;
-  algorithm?: TSIGALGORITHM;
+  name: string;
+  secret: string;
+  algorithm: TSIGALGORITHM;
 };
 
 export type CONTROLSCONFIG = {

@@ -39,9 +39,11 @@ export const parseBINDConfig = async (config: string): Promise<BINDCONFIG> => {
     if (mdTST.test(line)) {
       const { modeName, name } = /(?<modeName>key|zone)\s\"(?<name>\S+)\"\s/.exec(line).groups as { modeName: 'zone' | 'key'; name: string };
       mode = reduce[modeName];
-      if (!configObj[reduce[modeName]]) configObj[reduce[modeName]] = [{ name }];
-      else configObj[reduce[modeName]].push({ name });
-      subMode = configObj[reduce[modeName]].length - 1;
+      if (mode === 'keys' &&  !configObj[mode]) configObj[mode] = [{ name, algorithm: undefined, secret: ''}]
+      else if (mode === 'zones' && !configObj[mode]) configObj[mode] = [{ name, file: '', type: 'slave'  }]
+      else if (mode === 'keys' && configObj[mode]) configObj[mode].push({ name, algorithm: 'hmac-md5', secret: ''})
+      else if (mode == 'zones' && configObj[mode]) configObj[mode].push({ name, file: '', type: 'master'  })
+      subMode = configObj[mode].length - 1;
     }
 
     /**
@@ -117,11 +119,11 @@ export const parseBINDConfig = async (config: string): Promise<BINDCONFIG> => {
     /**
      * Zone Block Type parser
      */
-    if (/type.*/.test(line) && mode === 'zones') configObj.zones[subMode].type = /(?<=type\s).*(?=;)/.exec(line)![0] as ZONETYPE;
+    if (/type.*/.test(line) && mode === 'zones') configObj[mode][subMode]['type'] = /(?<=type\s).*(?=;)/.exec(line)![0] as ZONETYPE;
 
     // Zone Block Update Policy Parser
     if (/update-policy\s{/.test(line) && mode === 'zones')
-      configObj.zones[configObj.zones.length - 1].updatePolicy = { grant: /grant\s+(\S+)\s/.exec(line)[1], zonesub: /\szonesub\s(\S+);/.exec(line)[1] };
+      configObj[mode][subMode].updatePolicy = { grant: /grant\s+(\S+)\s/.exec(line)[1], zonesub: /\szonesub\s(\S+);/.exec(line)[1] };
 
     if (/(auto-dnssec)/.test(line) && mode === 'zones')
       configObj.zones[configObj.zones.length - 1].autoDNSSEC = /(?<=auto-dnssec\s)(\w+)/.exec(line)[1] as AUTODNSSEC;
