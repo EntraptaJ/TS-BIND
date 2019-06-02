@@ -25,7 +25,7 @@ const SAMPLE1: ZONE = {
 		service: '_http',
 		target: 'www.example.com.'
 	}],
-	caa: [{ flags: 0, ttl: 300, host: 'example.com.', tag: 'issue', value: 'comodo.com' }]
+	caa: [{ flags: 0, ttl: 300, host: 'example.com.', tag: 'issue', value: 'comodo.com' }, { flags: 0, ttl: 300, host: 'example.com.', tag: 'issue', value: 'comodo.com' }, { flags: 0, host: "inout.example.com.", tag: 'issue', ttl: 500, value: 'comodo.com'}]
 }
 
 const SAMPLE2: ZONE = {
@@ -42,6 +42,7 @@ const SAMPLE2: ZONE = {
 	a: [{ host: 'www', value: '192.168.1.118'}, { host: 'hello', value: '1.0.0.1'}],
 	aaaa: [{ host: '@', value: '2001:4860:4860::8888' }],
 	txt: [{host: 'hllo', value: 'HOIDNKOHHF'}],
+	caa: [{ flags: 0, host: 'example.com.', tag: 'issue', value: 'comodo.com' }],
 	srv: [
 		{ 
 			host: 'example.com.',
@@ -63,7 +64,8 @@ const SAMPLE2: ZONE = {
 		}
 	],
 	mx: [
-		{ host: 'mail3', preference: 10, value: 'mail2'}
+		{ host: 'mail3', preference: 10, value: 'mail2'},
+		{ host: 'testing', preference: 5, ttl: 5859, value: 'mail1'}
 	]
 }
 

@@ -33,12 +33,13 @@ export const SAMPLE1: ZONE = {
     }
   ],
   mx: [
-    { host: '@', preference: 10, value: 'mail2'}
+    { host: '@', preference: 10, value: 'mail2'},
+    { host: '@', preference: 5, value: 'mail1'}
   ],
   caa: [{ flags: 0, host: 'example.com.', tag: 'issue', value: 'comodo.com' }]
 };
 
-export const REVERSE1 = {
+export const REVERSE1: ZONE = {
   $ttl: 86400,
   $origin: '109.74.216.in-addr.arpa',
     soa: {
@@ -58,7 +59,7 @@ export const REVERSE1 = {
   ]
 }
 
-export const SAMPLE3 = {
+export const SAMPLE3: ZONE = {
   $origin: 'nt.kristianjones.xyz.',
   $ttl: 3600,
   ns: [{ host: '@', value: 'ns1.kristianjones.xyz.' }],
@@ -76,7 +77,7 @@ export const SAMPLE3 = {
   txt: [{ host: 'txt1', value: 'hello' }, { host: 'txt2', value: 'world' }],
 };
 
-export const SAMPLE2 = {
+export const SAMPLE2: ZONE = {
   $origin: 'nt.kristianjones.xyz.',
   ns: [{ host: '@', value: 'ns1.kristianjones.xyz.', ttl: 300 }],
   soa: {
@@ -117,7 +118,8 @@ export const SAMPLE2 = {
       ttl: 300
     }
   ],
-  caa: [{ flags: 0, ttl: 300, host: 'example.com.', tag: 'issue', value: 'comodo.com' }]
+  caa: [{ flags: 0, ttl: 300, host: 'example.com.', tag: 'issue', value: 'comodo.com' }, { flags: 0, host: "inout.example.com.", tag: 'issue', ttl: 500, value: 'comodo.com'}],
+  mx: [{ host: 'mail', preference: 10, value: 'mail2'}]
 };
 
 export const DYNSAMPLE1 = {

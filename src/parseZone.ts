@@ -122,6 +122,7 @@ export const ProcessSRV = async (line: string): Promise<SRVRECORD> => {
 export const ProcessPref = async (line: string): Promise<MXRECORD> => {
   const [hostRR, ...rr] = line.trim().split(/\s+/g);
   let returnObj: MXRECORD = { host: hostRR, preference: parseInt(rr[rr.length - 2]), value: rr[rr.length - 1] };
+  if (!isNaN(parseInt(rr[0])) && rr.length > 1) returnObj.ttl = parseInt(rr[0]);
   return returnObj;
 };
 

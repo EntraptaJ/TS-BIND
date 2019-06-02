@@ -40,8 +40,8 @@ export const parseBINDConfig = async (config: string): Promise<BINDCONFIG> => {
       const { modeName, name } = /(?<modeName>key|zone)\s\"(?<name>\S+)\"\s/.exec(line).groups as { modeName: 'zone' | 'key'; name: string };
       mode = reduce[modeName];
       if (mode === 'keys' &&  !configObj[mode]) configObj[mode] = [{ name, algorithm: undefined, secret: ''}]
-      else if (mode === 'zones' && !configObj[mode]) configObj[mode] = [{ name, file: '', type: 'slave'  }]
       else if (mode === 'keys' && configObj[mode]) configObj[mode].push({ name, algorithm: 'hmac-md5', secret: ''})
+      if (mode === 'zones' && !configObj[mode]) configObj[mode] = [{ name, file: '', type: 'slave'  }]
       else if (mode == 'zones' && configObj[mode]) configObj[mode].push({ name, file: '', type: 'master'  })
       subMode = configObj[mode].length - 1;
     }
@@ -87,8 +87,8 @@ export const parseBINDConfig = async (config: string): Promise<BINDCONFIG> => {
 
     // New line array configuration option
     if (subOpt && /\s+(\w.*);/g.test(line)) {
-      if (!subObj) configObj[mode][subOpt] ? configObj[mode][subOpt].push(/\s+(\w.*);/.exec(line)[1]) : (configObj[mode][subOpt] = [/\s+(\w.*);/.exec(line)[1]]);
-      if (subObj)
+      if (typeof subObj === 'undefined') configObj[mode][subOpt] ? configObj[mode][subOpt].push(/\s+(\w.*);/.exec(line)[1]) : (configObj[mode][subOpt] = [/\s+(\w.*);/.exec(line)[1]]);
+      else 
         configObj[mode][subObj][subOpt]
           ? configObj[mode][subObj][subOpt].push(/\s+(\w.*);/.exec(line)[1])
           : (configObj[mode][subObj][subOpt] = [/\s+(\w.*);/.exec(line)[1]]);
@@ -101,7 +101,7 @@ export const parseBINDConfig = async (config: string): Promise<BINDCONFIG> => {
      * Options Block Yes/No Parser
      */
     if (booleanTST.test(line)) {
-      if (!subMode)
+      if (typeof subMode === 'undefined')
         configObj[mode][
           booleanTST
             .exec(line)[1]

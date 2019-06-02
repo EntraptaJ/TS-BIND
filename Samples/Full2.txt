@@ -16,8 +16,11 @@ _ldap._tcp.example.com.  300  SRV 0 0 389 ldap.example.net.
 1	PTR	HOST1.MYDOMAIN.COM.
 
 example.com.   300 CAA 0 issue "comodo.com"
+inout.example.com.   500 CAA 0 issue "comodo.com"
 
 
 mail1                           CNAME   mail
+
+mail	  IN  MX	10	mail2
 
 txt1 300 TXT "v=spf1 a mx a:mail.treefrog.ca a:webmail.treefrog.ca ip4:76.75.250.33"

@@ -17,11 +17,17 @@ options {
 
     ${config.options.allowTransfer ? `allow-transfer {\n${config.options.allowTransfer.map(transfer => `\t\t${transfer};\n`).join('')}\t  };` : ``}
 
+    ${config.options.alsoNotify ? `also-notify {\n${config.options.alsoNotify.map(notify => `\t\t${notify};\n`).join('')}\t  };` : ``}
+
+
     ${config.options.allowRecursion ? `allow-recursion {\n${config.options.allowRecursion.map(recursion => `\t\t${recursion};\n`).join('')}\t  };` : ``}
+
+
 
     ${typeof config.options.recursion !== 'undefined' ? `recursion ${config.options.recursion ? `yes` : `no`};` : ''}
 
-    ${config.options.dnssec ? `` : ``}
+    ${typeof config.options.dnssec !== 'undefined' ? `dnssec-enable ${config.options.dnssec ? `yes` : `no`};` : ''}
+    ${typeof config.options.dnssecValidation !== 'undefined' ? `dnssec-validation ${config.options.dnssecValidation ? `yes` : `no`};` : ''}
 };
 
 ${
@@ -48,7 +54,7 @@ ${zone.keyDirectory ? `\tkey-directory "${zone.keyDirectory}";\n` : ''}${zone.au
 ${typeof zone.inlineSigning !== 'undefined' ? `\tinline-signing ${zone.inlineSigning ? `yes` : `no`};\n` : ``}${
       zone.updatePolicy ? `\tupdate-policy { grant ${zone.updatePolicy.grant} zonesub ${zone.updatePolicy.zonesub}; };\n` : ``
     }${zone.allowTransfer ? `\tallow-transfer {\n${zone.allowTransfer.map(transfer => `\t\t${transfer};\n`).join('')}\t  };\n` : ``}${
-      zone.alsoNotify ? `\talso-notify {\n${zone.alsoNotify.map(notify => `\t\t${notify};`).join('')}\t\n };\n` : ``
+      zone.alsoNotify ? `\talso-notify {\n${zone.alsoNotify.map(notify => `\t\t${notify};\n`).join('')}\t\n };\n` : ``
     }
 };\n\n`,
   )

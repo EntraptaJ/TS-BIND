@@ -5,7 +5,7 @@ export const SAMPLE1OBJ: BINDCONFIG = {
     directory: '/var/bind',
     dnssec: true,
     dnssecValidation: true,
-    recursion: false,
+    recursion: true,
     pidFile: '/var/run/named/named.pid',
     listenOn: ['any'],
     alsoNotify: ['1.1.1.1', '1.0.0.1'],
@@ -39,7 +39,7 @@ options {
   pid-file "/var/run/named/named.pid";
 
   allow-recursion { none; };
-  recursion no;
+  recursion yes;
   dnssec-enable yes;
   dnssec-validation yes;
 };
@@ -58,7 +58,7 @@ key "hello-world" {
 `;
 
 export const SAMPLE2OBJ: BINDCONFIG = {
-  include: ['/etc/rndc.key'],
+  include: ['/etc/rndc.key', '/etc/rndc2.key'],
   controls: {
     inet: {
       allow: 'localhost',
@@ -73,18 +73,12 @@ export const SAMPLE2OBJ: BINDCONFIG = {
     allowTransfer: ['none'],
     allowRecursion: ['none'],
     recursion: false,
+    dnssec: false,
+    dnssecValidation: false
   },
   zones: [
-    {
-      name: 'example.com',
-      type: 'master',
-      file: '/zones/example.com',
-      updatePolicy: {
-        grant: 'hello-world',
-        zonesub: 'ANY',
-      },
-    },
-    { name: 'tst.example.com', type: 'master', file: '/zones/tst.example.com', notify: true, inlineSigning: true, keyDirectory: '/etc/bind/keys', allowTransfer: ['192.168.255.16'], alsoNotify: ['192.168.255.16'], autoDNSSEC: 'maintain' },
+
+    { name: 'tst.example.com', type: 'master', file: '/zones/tst.example.com', notify: true, inlineSigning: true, keyDirectory: '/etc/bind/keys', allowTransfer: ['192.168.255.16'], alsoNotify: ['192.168.255.16', '10.20.0.170'], autoDNSSEC: 'maintain' },
   ],
   keys: [
     {
@@ -98,6 +92,7 @@ export const SAMPLE2OBJ: BINDCONFIG = {
 
 export const SAMPLE2TXT = `
 include "/etc/rndc.key";
+include "/etc/rndc2.key";
 
 controls {
   inet 127.0.0.1 allow { localhost; } keys { "rndc-key"; };
@@ -118,12 +113,8 @@ options {
 
   allow-recursion { none; };
   recursion no;
-};
-
-zone "example.com" {
-    type master;
-  update-policy { grant hello-world zonesub ANY; };
-  file "/zones/example.com";
+  dnssec-enable no;
+  dnssec-validation no;
 };
 
 zone "tst.example.com" {
@@ -131,7 +122,8 @@ zone "tst.example.com" {
   file "/zones/tst.example.com";
   allow-transfer { 192.168.255.16; };
   also-notify { 
-    192.168.255.16; 
+    192.168.255.16;
+    10.20.0.170;
   };
   notify yes;
   inline-signing yes;
@@ -147,6 +139,72 @@ key "hello-world" {
 key "tst2" {
   algorithm hmac-sha256;
   secret "HELLO-KEY";
+};
+
+`;
+
+
+export const SAMPLE3OBJ: BINDCONFIG = {
+  include: ['/etc/rndc.key', '/etc/rndc2.key'],
+  controls: {
+    inet: {
+      allow: 'localhost',
+      keys: 'rndc-key',
+      source: '127.0.0.1',
+    },
+  },
+  options: {
+  },
+  zones: [
+    {
+      name: 'example.com',
+      type: 'master',
+      file: '/zones/example.com',
+      inlineSigning: false,
+      updatePolicy: {
+        grant: 'hello-world',
+        zonesub: 'ANY',
+      },
+      notify: false
+    },
+    { name: 'tst.example.com', type: 'master', file: '/zones/tst.example.com', notify: true, inlineSigning: true, keyDirectory: '/etc/bind/keys', allowTransfer: ['192.168.255.16'], alsoNotify: ['192.168.255.16'], autoDNSSEC: 'maintain' },
+  ]
+};
+
+export const SAMPLE3TXT = `
+include "/etc/rndc.key";
+include "/etc/rndc2.key";
+
+controls {
+  inet 127.0.0.1 allow { localhost; } keys { "rndc-key"; };
+};
+
+
+options {
+  listen-on-v6 { none; };
+
+
+};
+
+zone "example.com" {
+  type master;
+  notify no;
+  inline-signing no;
+  update-policy { grant hello-world zonesub ANY; };
+  file "/zones/example.com";
+};
+
+zone "tst.example.com" {
+  type master;
+  file "/zones/tst.example.com";
+  allow-transfer { 192.168.255.16; };
+  also-notify { 
+    192.168.255.16; 
+  };
+  notify yes;
+  inline-signing yes;
+  key-directory "/etc/bind/keys";
+  auto-dnssec maintain;
 };
 
 `;
