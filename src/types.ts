@@ -22,10 +22,10 @@ export type SRVRECORD = {
   protocol: string;
   host: string;
   ttl?: number;
-  priority?: number;
-  weight?: number;
-  port?: number;
-  target?: string;
+  priority: number;
+  weight: number;
+  port: number;
+  target: string;
 };
 
 export type MXRECORD = {
