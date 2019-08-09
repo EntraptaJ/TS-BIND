@@ -14,7 +14,7 @@ const SAMPLE1: ZONE = {
 	ns: [{ host: '@', ttl: 300,value: 'dnstest' }],
 	a: [{ host: 'www', value: '192.168.1.118'}, { host: 'hello', value: '1.0.0.1'}],
 	aaaa: [{ host: '@', value: '2001:4860:4860::8888' }],
-	txt: [{host: 'hllo', value: 'HOIDNKOHHF'}],
+	txt: [{host: 'hllo', value: 'HOIDNKOHHF'}, { host: 'txt1', value: 'Hello World' }],
 	srv: [    { 
 		host: 'example.com.',
 		port: 80,
@@ -77,6 +77,7 @@ describe('Generate Zone Files', () => {
 			const expectZone: ZONE = {...SAMPLE1, ns: [{ host: '@', ttl: 300, value: 'dnstest'}]}
 			const zoneOBJ = await generateZoneFile(SAMPLE1)
 			const loadedZone = await parseZoneFile(zoneOBJ);
+			console.log(zoneOBJ)
 			await expect(loadedZone).toStrictEqual(expectZone);
 		})
 	

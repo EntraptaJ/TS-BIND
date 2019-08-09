@@ -14,7 +14,7 @@ export const generateZoneFile = async (zone: ZONE): Promise<string> => {
     Promise.all(valuemap.map(async item => await processValueOBJ(item))),
     Promise.all(srvmap.map(async item => await processSRVOBJ(item))),
     Promise.all(prefmap.map(async item => await processPREFOBJ(item))),
-    Promise.all(caamap.map(async item => await processCAAOBJ(item)))
+    Promise.all(caamap.map(async item => await processCAAOBJ(item))),
   ];
   await Promise.all(promises);
   const zoneText = `
@@ -27,8 +27,8 @@ $ORIGIN ${/\.\D+\.$/.test(zone.$origin) ? zone.$origin : `${zone.$origin}.`}\n
   ${zone.soa.mttl}                     ) ; minimum ttl
 
 ${Object.entries(RCD)
-  .map(([a1, b1]) => `\n\n; ${a1.toUpperCase()} Records ${b1.join('')}`)
-  .join('')}`;
+    .map(([a1, b1]) => `\n\n; ${a1.toUpperCase()} Records ${b1.join('')}`)
+    .join('')}`;
   return zoneText;
 };
 
@@ -37,7 +37,7 @@ const processValueOBJ = async ([key, a]: [string, string | number | SOA | VRECOR
     ? a
         .sort((a, b) => (a.host < b.host ? -1 : 1))
         .map(async obj => {
-          const line = `\n${obj.host}\t${obj.ttl ? `${obj.ttl}\t` : ''}IN\t${key.toUpperCase()}\t${obj.value}`;
+          const line = `\n${obj.host}\t${obj.ttl ? `${obj.ttl}\t` : ''}IN\t${key.toUpperCase()}\t${key.toUpperCase() === 'TXT' ? `"${obj.value}"` : obj.value}`;
           if (!RCD[key]) RCD[key] = [line];
           else RCD[key].push(line);
         })
@@ -59,8 +59,9 @@ export const processPREFOBJ = async ([key, a]: [string, MXRECORD[]]) =>
     else RCD[key].push(line);
   });
 
-export const processCAAOBJ = async ([key, a]: [string, CAARecord[]]) => a.map(async obj => {
-  const line = `\n${obj.host}\t${obj.ttl ? `${obj.ttl}\t` : ''}IN\t${key.toUpperCase()}\t${obj.flags}\t${obj.tag}\t${obj.value}`
-  if (!RCD[key]) RCD[key] = [line];
-  else RCD[key].push(line);
-})
+export const processCAAOBJ = async ([key, a]: [string, CAARecord[]]) =>
+  a.map(async obj => {
+    const line = `\n${obj.host}\t${obj.ttl ? `${obj.ttl}\t` : ''}IN\t${key.toUpperCase()}\t${obj.flags}\t${obj.tag}\t${obj.value}`;
+    if (!RCD[key]) RCD[key] = [line];
+    else RCD[key].push(line);
+  });

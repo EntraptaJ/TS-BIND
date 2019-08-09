@@ -93,7 +93,7 @@ export const ProcessValueRecord = async (line: string): Promise<VRECORD> => {
   let returnObj: VRECORD = { host: host, value: '' };
   if (!isNaN(parseInt(rrRecord[0])) && rrRecord.length > 1) returnObj.ttl = parseInt(rrRecord[0]);
   returnObj.value =
-    rrRecord.length > 5
+    rrRecord.length > 3
       ? rrRecord
           .filter((a, b) => b < rrRecord.length && (!VALUETST.test(a) && b > 1) && a !== (returnObj.ttl ? returnObj.ttl.toString() : undefined))
           .join(',')

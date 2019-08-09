@@ -20,6 +20,8 @@ export const SAMPLE1: ZONE = {
     { host: 'txt1', value: 'hello' },
     { host: 'txt2', value: 'world' },
     { host: 'txt3', value: 'v=spf1 a mx a:mail.treefrog.ca a:webmail.treefrog.ca ip4:76.75.250.33' },
+    { host: 'txt4', value: 'Hello world testing' },
+    { host: 'txt5', value: 'Hello World' },
   ],
   srv: [
     { 

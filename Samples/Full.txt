@@ -18,7 +18,8 @@ hello-world  IN      DNAME example.example.net.
 txt1    IN  TXT "hello"
 txt2    IN  TXT "world"
 txt3    IN  TXT "v=spf1 a mx a:mail.treefrog.ca a:webmail.treefrog.ca ip4:76.75.250.33"
-
+txt4    IN	TXT "Hello world testing"
+txt5    IN  TXT "Hello World"
 
 example.com.    IN CAA 0 issue "comodo.com"
 
