@@ -24,3 +24,5 @@ mail1                           CNAME   mail
 mail	  IN  MX	10	mail2
 
 txt1 300 TXT "v=spf1 a mx a:mail.treefrog.ca a:webmail.treefrog.ca ip4:76.75.250.33"
+txt2 300 TXT "Hello World"
+txt3 500 TXT "Hello A NS Stuff Ants"

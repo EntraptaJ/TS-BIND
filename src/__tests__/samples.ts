@@ -1,4 +1,4 @@
-import { ZONE  } from '../types'
+import { ZONE } from '../types';
 
 export const SAMPLE1: ZONE = {
   $origin: 'nt.kristianjones.xyz.',
@@ -22,29 +22,27 @@ export const SAMPLE1: ZONE = {
     { host: 'txt3', value: 'v=spf1 a mx a:mail.treefrog.ca a:webmail.treefrog.ca ip4:76.75.250.33' },
     { host: 'txt4', value: 'Hello world testing' },
     { host: 'txt5', value: 'Hello World' },
+    { host: 'txt6', value: 'Hello A NS' },
   ],
   srv: [
-    { 
+    {
       host: 'example.com.',
       port: 80,
       priority: 0,
       weight: 5,
       protocol: '_tcp',
       service: '_http',
-      target: 'www.example.com.'
-    }
+      target: 'www.example.com.',
+    },
   ],
-  mx: [
-    { host: '@', preference: 10, value: 'mail2'},
-    { host: '@', preference: 5, value: 'mail1'}
-  ],
-  caa: [{ flags: 0, host: 'example.com.', tag: 'issue', value: 'comodo.com' }]
+  mx: [{ host: '@', preference: 10, value: 'mail2' }, { host: '@', preference: 5, value: 'mail1' }],
+  caa: [{ flags: 0, host: 'example.com.', tag: 'issue', value: 'comodo.com' }],
 };
 
 export const REVERSE1: ZONE = {
   $ttl: 86400,
   $origin: '109.74.216.in-addr.arpa',
-    soa: {
+  soa: {
     contact: 'me.kristianjones.xyz.hello1.kristianjones.xyz.',
     serial: '1',
     refresh: '3600',
@@ -52,14 +50,9 @@ export const REVERSE1: ZONE = {
     expire: '604800',
     mttl: '1800',
   },
-  ns: [
-    { host: 'tst1', value: 'dns.trouble-free.net.'},
-    { host: 'tst1', value: 'dns2.trouble-free.net.'}
-  ],
-  ptr: [
-    { host: '81', value: 'my.reverse.dns.domain.com.' },
-  ]
-}
+  ns: [{ host: 'tst1', value: 'dns.trouble-free.net.' }, { host: 'tst1', value: 'dns2.trouble-free.net.' }],
+  ptr: [{ host: '81', value: 'my.reverse.dns.domain.com.' }],
+};
 
 export const SAMPLE3: ZONE = {
   $origin: 'nt.kristianjones.xyz.',
@@ -98,16 +91,20 @@ export const SAMPLE2: ZONE = {
     },
   ],
   cname: [{ host: 'mail1', value: 'mail' }],
-  txt: [{ host: 'txt1', value: 'v=spf1 a mx a:mail.treefrog.ca a:webmail.treefrog.ca ip4:76.75.250.33', ttl: 300 }],
+  txt: [
+    { host: 'txt1', value: 'v=spf1 a mx a:mail.treefrog.ca a:webmail.treefrog.ca ip4:76.75.250.33', ttl: 300 },
+    { host: 'txt2', ttl: 300, value: 'Hello World' },
+    { host: 'txt3', ttl: 500, value: 'Hello A NS Stuff Ants' },
+  ],
   srv: [
-    { 
+    {
       host: 'example.com.',
       port: 80,
       priority: 0,
       weight: 5,
       protocol: '_tcp',
       service: '_http',
-      target: 'www.example.com.'
+      target: 'www.example.com.',
     },
     {
       host: 'example.com.',
@@ -117,11 +114,14 @@ export const SAMPLE2: ZONE = {
       protocol: '_tcp',
       service: '_ldap',
       target: 'ldap.example.net.',
-      ttl: 300
-    }
+      ttl: 300,
+    },
   ],
-  caa: [{ flags: 0, ttl: 300, host: 'example.com.', tag: 'issue', value: 'comodo.com' }, { flags: 0, host: "inout.example.com.", tag: 'issue', ttl: 500, value: 'comodo.com'}],
-  mx: [{ host: 'mail', preference: 10, value: 'mail2'}]
+  caa: [
+    { flags: 0, ttl: 300, host: 'example.com.', tag: 'issue', value: 'comodo.com' },
+    { flags: 0, host: 'inout.example.com.', tag: 'issue', ttl: 500, value: 'comodo.com' },
+  ],
+  mx: [{ host: 'mail', preference: 10, value: 'mail2' }],
 };
 
 export const DYNSAMPLE1 = {
@@ -136,5 +136,5 @@ export const DYNSAMPLE1 = {
     mttl: '1800',
   },
   a: [{ host: '@', value: '1.1.1.1' }, { host: 'tst1', value: '1.0.0.1' }],
-  ns: [{ host: '@', value: 'dnstest.kristianjones.xyz.' }]
+  ns: [{ host: '@', value: 'dnstest.kristianjones.xyz.' }],
 };

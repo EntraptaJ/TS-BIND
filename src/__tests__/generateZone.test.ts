@@ -77,7 +77,6 @@ describe('Generate Zone Files', () => {
 			const expectZone: ZONE = {...SAMPLE1, ns: [{ host: '@', ttl: 300, value: 'dnstest'}]}
 			const zoneOBJ = await generateZoneFile(SAMPLE1)
 			const loadedZone = await parseZoneFile(zoneOBJ);
-			console.log(zoneOBJ)
 			await expect(loadedZone).toStrictEqual(expectZone);
 		})
 	

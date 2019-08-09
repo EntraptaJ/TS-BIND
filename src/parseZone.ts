@@ -8,7 +8,7 @@ let curhost: string;
 /**
  * Takes BIND9 Zonefile as string, parses it and returns an object of the values within the zone
  * @param zone Valid BIND9 Zonefile as a string
- * @example 
+ * @example
  * ```typescript
  * import { parseZoneFile } from 'ts-zone-file';
  * import { readFile } from 'fs-extra';
@@ -22,7 +22,7 @@ export const parseZoneFile = async (zone: string): Promise<ZONE> => {
   const rl = zone.split('\n');
 
   // @ts-ignore
-  let Zone: ZONE = { $origin: '', soa: {}};
+  let Zone: ZONE = { $origin: '', soa: {} };
   let soa = '';
   let SOASEC;
   // Iterate through file async line by line
@@ -54,10 +54,9 @@ export const parseZoneFile = async (zone: string): Promise<ZONE> => {
       Zone[VALUEXP.exec(line)[1].toLowerCase()]
         ? Zone[VALUEXP.exec(line)[1].toLowerCase()].push({ ...(await ProcessValueRecord(line)) })
         : (Zone[VALUEXP.exec(line)[1].toLowerCase()] = [{ ...(await ProcessValueRecord(line)) }]);
-    else if (/\s+SRV\s+/.test(uLine)) Zone.srv ? Zone.srv.push(await ProcessSRV(line)) : Zone.srv = [{...await ProcessSRV(line)}];
-    else if (/\s+(MX)\s+/.test(uLine)) Zone.mx ? Zone.mx.push(await ProcessPref(line)) : Zone.mx = [{...await ProcessPref(line)}];
-    else if (/\s+(CAA)\s/.test(uLine)) Zone.caa ? Zone.caa.push(await ProcessCAA(line)) : Zone.caa = [{...await ProcessCAA(line)}]
-
+    else if (/\s+SRV\s+/.test(uLine)) Zone.srv ? Zone.srv.push(await ProcessSRV(line)) : (Zone.srv = [{ ...(await ProcessSRV(line)) }]);
+    else if (/\s+(MX)\s+/.test(uLine)) Zone.mx ? Zone.mx.push(await ProcessPref(line)) : (Zone.mx = [{ ...(await ProcessPref(line)) }]);
+    else if (/\s+(CAA)\s/.test(uLine)) Zone.caa ? Zone.caa.push(await ProcessCAA(line)) : (Zone.caa = [{ ...(await ProcessCAA(line)) }]);
   }
   // If their is no SOA at this point it is an INVALID Zone File
   if (soa.length === 0) throw new Error('INVALID ZONE FILE');
@@ -95,7 +94,12 @@ export const ProcessValueRecord = async (line: string): Promise<VRECORD> => {
   returnObj.value =
     rrRecord.length > 3
       ? rrRecord
-          .filter((a, b) => b < rrRecord.length && (!VALUETST.test(a) && b > 1) && a !== (returnObj.ttl ? returnObj.ttl.toString() : undefined))
+          .filter(
+            (a, b) =>
+              b < rrRecord.length &&
+              ((!/^(NS|CNAME|TXT|PTR|A|AAAA|IN|DNAME)$/.test(a) && b > 1) || b > 2)&&
+              a !== (returnObj.ttl ? returnObj.ttl.toString() : undefined),
+          )
           .join(',')
           .replace(/,/g, ' ')
           .replace(/\"/g, '')
@@ -128,7 +132,7 @@ export const ProcessPref = async (line: string): Promise<MXRECORD> => {
 
 export const ProcessCAA = async (line: string): Promise<CAARecord> => {
   const [hostRR, ...rr] = line.trim().split(/\s+/g);
-  const returnOBJ: CAARecord = { host: hostRR, flags: parseInt(rr[rr.length - 3]), tag: rr[rr.length - 2] as CAATAG, value: rr[rr.length - 1].replace(/\"/g, '')}
+  const returnOBJ: CAARecord = { host: hostRR, flags: parseInt(rr[rr.length - 3]), tag: rr[rr.length - 2] as CAATAG, value: rr[rr.length - 1].replace(/\"/g, '') };
   if (!isNaN(parseInt(rr[0])) && rr.length > 1) returnOBJ.ttl = parseInt(rr[0]);
   return returnOBJ;
-}
+};
