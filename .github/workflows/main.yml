@@ -11,7 +11,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - name: npm install anbd test
         run: npm install
-      - uses: rkusa/jest-action@latest
+      - uses: rkusa/jest-action@1.0.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
