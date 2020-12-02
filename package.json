@@ -22,7 +22,7 @@
   "license": "ISC",
   "devDependencies": {
     "@types/fs-extra": "^5.1.0",
-    "@types/jest": "^24.0.12",
+    "@types/jest": "^26.0.16",
     "fs-extra": "^8.0.0",
     "jest": "^24.8.0",
     "jest-junit": "^6.4.0",
